@@ -26,7 +26,20 @@ public final class ArrayUtils {
      * @throws AssertionError if one of the parameters is null
      */
     public static boolean equals(byte[] a1, byte[] a2){
-        return Helper.fail("Not Implemented");
+        /*
+        * If one parameter is null, throw an AssertionError
+        * If both parameters are null, return true
+        * If both parameters have different length, return false
+        * If both parameters have the same length, check if the content is the same
+         */
+        /* TODO: VERIFIER LE CAS OU LES DEUX TABLEAUX SONT NULL / OU UN TABLEAU EST NUL */
+        assert a1 != null && a2 != null : "There is one null parameter";
+        if (a1.length != a2.length) return false;
+        for (int i = 0; i < a1.length; i++) {
+            if (a1[i] != a2[i]) return false;
+        }
+        // useless here : if (a1 == null && a2 == null) return true;
+        return true;
     }
 
     /**
@@ -37,7 +50,17 @@ public final class ArrayUtils {
      * @throws AssertionError if one of the parameters is null
      */
     public static boolean equals(byte[][] a1, byte[][] a2){
-        return Helper.fail("Not Implemented");
+        /*
+        * If one parameter is null, throw an AssertionError
+        * If both parameters have different length, return false
+        * TODO: reflechir à l'utilité du assert ci-dessous ainsi que des tests de longueur (redondance de code?)
+         */
+        assert a1 != null && a2 != null : "There is one null parameter";
+        if (a1.length != a2.length) return false;
+        for (int i = 0; i < a1.length; i++) {
+            if (!equals(a1[i], a2[i])) return false;
+        }
+        return true;
     }
 
     // ==================================================================================

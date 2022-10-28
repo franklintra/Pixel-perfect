@@ -40,6 +40,8 @@ public final class Main {
          */
 
         // ========== Test ArrayUtils ==========
+        // TODO: implement testEquals() (always returns true);
+        testEquals();
         //assert testWrap();
         //assert testToInt();
         //assert testFromInt();
@@ -121,6 +123,20 @@ public final class Main {
     // ============================================================================================
 
     @SuppressWarnings("unused")
+    private static boolean testEquals(){
+        // TODO: rajouter le test de null
+        byte[][] a = new byte[][]{{0b01, 0b10}, {0b11, 0b00}};
+        byte[][] b = new byte[][]{{0b10, 0b10}, {0b11, 0b00}};
+        byte[][] c = null;
+        boolean test = false;
+        if (Arrays.deepEquals(a, b) == ArrayUtils.equals(a, b)) {
+            test = true;
+        }
+        if (Arrays.equals(a[0], b[0]) == ArrayUtils.equals(a[0], b[0])) {
+            test = true;
+        }
+        return test;
+    }
     private static boolean testWrap(){
         byte a = 1;
         byte[] wrappedA = ArrayUtils.wrap(a);
