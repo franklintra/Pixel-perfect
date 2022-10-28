@@ -2,4 +2,4 @@
 ## By Melaine and Franklin
 ### Lausanne
 
-## Projet section informatique BA-1
+## Projet section informatique BA-

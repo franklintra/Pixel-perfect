@@ -3,7 +3,7 @@ package cs107;
 /**
  * Utility class used to simulate the Unix command "hexdump"
  * @author Hamza REMMAL (hamza.remmal@epfl.ch)
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public final class Hexdump {
@@ -42,7 +42,7 @@ public final class Hexdump {
      */
     public static void hexdump(byte[] binary, int start_address, int end_address){
         assert binary != null : "(hexdump) You've used a null array, cannot dump the null array";
-        assert  0 <= start_address && start_address < end_address;
+        assert  0 <= start_address && start_address <= end_address;
         assert end_address < binary.length;
         var mod_length = (end_address - start_address + 1) % 10;
         var div_length = (end_address - start_address + 1) / 10;
