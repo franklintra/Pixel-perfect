@@ -2,4 +2,3 @@
 ## By Melaine and Franklin
 
 ## Projet section informatique BA-1
->>>>>>> fa63513 (Initial commit)
