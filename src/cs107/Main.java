@@ -41,8 +41,8 @@ public final class Main {
 
         // ========== Test ArrayUtils ==========
         // TODO: implement testEquals() (always returns true);
-        testEquals();
-        //assert testWrap();
+        assert testEquals();
+        assert testWrap();
         //assert testToInt();
         //assert testFromInt();
         //assert testConcatArrayBytes();

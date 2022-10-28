@@ -1,5 +1,7 @@
 package cs107;
 
+import java.util.Arrays;
+
 /**
  * Utility class to manipulate arrays.
  * @apiNote First Task of the 2022 Mini Project
@@ -73,7 +75,7 @@ public final class ArrayUtils {
      * @return (byte[]) - array with one element (value)
      */
     public static byte[] wrap(byte value){
-        return Helper.fail("Not Implemented");
+        return new byte[]{value};
     }
 
     // ==================================================================================
