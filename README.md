@@ -1,3 +1,4 @@
-#QOI image format encoder and decoder
+# QOI image format encoder and decoder
+## By Melaine and Franklin
 
-##By Melaine and Franklin
+## Projet section informatique BA-1
