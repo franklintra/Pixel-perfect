@@ -75,6 +75,7 @@ public final class ArrayUtils {
      * @return (byte[]) - array with one element (value)
      */
     public static byte[] wrap(byte value){
+        /* Converts byte to [byte] */
         return new byte[]{value};
     }
 
@@ -240,7 +241,6 @@ public final class ArrayUtils {
      * or width is invalid
      */
     public static int[][] channelsToImage(byte[][] input, int height, int width){
-        return Helper.fail("Not Implemented");
+        return null;
     }
-
 }
