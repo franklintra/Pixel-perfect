@@ -91,7 +91,7 @@ public final class ArrayUtils {
      * @throws AssertionError if the input is null or the input's length is different from 4
      */
     public static int toInt(byte[] bytes){
-        return Helper.fail("Not Implemented");
+        return 1;
     }
 
     /**
@@ -101,7 +101,13 @@ public final class ArrayUtils {
      * @return (byte[]) - Big Endian representation of the integer
      */
     public static byte[] fromInt(int value){
-        return Helper.fail("Not Implemented");
+        /* convert int to [byte] using Big Endian */
+        byte[] res = new byte[4];
+        res[0] = (byte) (value >>> 24);
+        res[1] = (byte) (value >>> 16);
+        res[2] = (byte) (value >>> 8);
+        res[3] = (byte) value;
+        return res;
     }
 
     // ==================================================================================
@@ -115,7 +121,14 @@ public final class ArrayUtils {
      * @throws AssertionError if the input is null
      */
     public static byte[] concat(byte ... bytes){
-        return Helper.fail("Not Implemented");
+        /* TODO: Verifier que ca revient au même */
+        /* this function returns an array of all the arguments (more specifically an array of ellipses style arguments)
+        /*byte[] temp = new byte[bytes.length];
+        for (int i = 0; i < bytes.length; ++i) {
+            temp[i] = bytes[i];
+        }
+        return temp;*/
+        return bytes;
     }
 
     /**
@@ -126,7 +139,19 @@ public final class ArrayUtils {
      * or one of the inner arrays of input is null.
      */
     public static byte[] concat(byte[] ... tabs){
-        return Helper.fail("Not Implemented");
+        /* This function concatenates each line of the matrix tabs */
+        int length = 0;
+        for (byte[] line: tabs) {
+            length += line.length;
+        }
+        byte[] temp = new byte[length];
+        int i = 0;
+        for (byte[] line: tabs) {
+            for (byte element: line) {
+                temp[i++] = element;
+            }
+        }
+        return temp;
     }
 
     // ==================================================================================
@@ -143,7 +168,13 @@ public final class ArrayUtils {
      * start + length should also be smaller than the input's length
      */
     public static byte[] extract(byte[] input, int start, int length){
-        return Helper.fail("Not Implemented");
+        /* cette fonction arrange toutes les colonnes derrière la première ligne */
+        byte[] temp = new byte[length];
+        int index = 0;
+        for (int i = start; i < length + start; ++i) {
+            temp[index++] = input[i];
+        }
+        return temp;
     }
 
     /**
@@ -157,7 +188,19 @@ public final class ArrayUtils {
      * or the sum of the elements in sizes is different from the input's length
      */
     public static byte[][] partition(byte[] input, int ... sizes) {
-        return Helper.fail("Not Implemented");
+        /* TODO: RELIRE POUR COMPRENDRE STP */
+        /*
+        * Let temp be the matrix with number of lines = number of cuts of input
+        * For each line of the matrix, let's cut the input array to the right indices
+        * Indices are calculated recursively
+        */
+        byte[][] temp = new byte[sizes.length][];
+        int start = 0;
+        for (int i = 0; i < sizes.length; ++i) {
+            temp[i] = extract(input, start, sizes[i]);
+            start += sizes[i];
+        }
+        return temp;
     }
 
     // ==================================================================================
@@ -176,7 +219,10 @@ public final class ArrayUtils {
      * or one of the inner arrays of input is null
      */
     public static byte[][] imageToChannels(int[][] input){
-        return Helper.fail("Not Implemented");
+        /* TODO: En cours */
+        int npixel = input.length * input[0].length;
+        byte[][] temp = new byte[input.length][];
+        return temp;
     }
 
     /**

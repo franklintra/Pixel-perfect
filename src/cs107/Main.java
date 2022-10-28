@@ -44,11 +44,11 @@ public final class Main {
         assert testEquals();
         assert testWrap();
         //assert testToInt();
-        //assert testFromInt();
-        //assert testConcatArrayBytes();
-        //assert testConcatBytes();
-        //assert testExtract();
-        //assert testPartition();
+        assert testFromInt();
+        assert testConcatArrayBytes();
+        assert testConcatBytes();
+        assert testExtract();
+        assert testPartition();
         //assert testImageToChannels();
         //assert testChannelsToImage();
 
