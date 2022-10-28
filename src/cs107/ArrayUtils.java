@@ -92,7 +92,13 @@ public final class ArrayUtils {
      * @throws AssertionError if the input is null or the input's length is different from 4
      */
     public static int toInt(byte[] bytes){
-        return 1;
+        /* Converts [byte] to int */
+        assert bytes != null && bytes.length == 4 : "The input is null or its length is not 4";
+        int result = 0;
+        for (int i = 0; i < 4; i++) {
+            result = (result << 8) | (bytes[i] & 0xFF);
+        }
+        return result;
     }
 
     /**
