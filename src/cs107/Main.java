@@ -70,6 +70,10 @@ public final class Main {
         //assert testDecodeData();
 
         System.out.println("All the tests passes. Congratulations");
+        /* sout pour des bytes
+        byte[] b = new byte[]{0b01, 0b10};
+        Hexdump.hexdump(b);
+        */
     }
 
     // ============================================================================================
