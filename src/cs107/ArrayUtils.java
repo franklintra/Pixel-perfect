@@ -260,14 +260,7 @@ public final class ArrayUtils {
                 intermediate[index++] = concat(partition(fromInt(anInt), 1, 1, 1, 1));
             }
         }
-        byte[][] temp = new byte[input.length * input[0].length][4];
-        // Indices correction from ARGB space to RGBA space
-        for (int i=0; i<intermediate.length; ++i) {
-            temp[i][r] = intermediate[i][1];
-            temp[i][g] = intermediate[i][2];
-            temp[i][b] = intermediate[i][3];
-            temp[i][a] = intermediate[i][0];
-        }
+        byte[][] temp = ARGBtoRGBA(intermediate); // Indices correction from ARGB space to RGBA space
         return temp;
     }
 
@@ -286,5 +279,25 @@ public final class ArrayUtils {
      */
     public static int[][] channelsToImage(byte[][] input, int height, int width){
         return null;
+    }
+
+    /*
+    * This functions takes a matrix of pixels in ARGB format and returns a pixel matrix in RGBA format
+    * @param input (byte[][]) - pixel matrix in ARGB format
+    * @return (byte[][]) - pixel matrix in RGBA format
+    * @throws AssertionError if the input is null
+    * or the pixels are incomplete (not 4 channels)
+     */
+    public static byte[][] ARGBtoRGBA(byte[][] input) {
+        assert input != null : "The input is null";
+        assert input[0].length == 4 : "The pixels are incomplete (not 4 channels)";
+        byte[][] temp = new byte[input.length][4];
+        for (int i = 0; i < input.length; ++i) {
+            temp[i][r] = input[i][1];
+            temp[i][g] = input[i][2];
+            temp[i][b] = input[i][3];
+            temp[i][a] = input[i][0];
+        }
+        return temp;
     }
 }
