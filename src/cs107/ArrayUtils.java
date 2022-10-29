@@ -1,7 +1,5 @@
 package cs107;
 
-import java.util.Arrays;
-
 import static cs107.QOISpecification.*;
 
 /**
@@ -131,6 +129,7 @@ public final class ArrayUtils {
      */
     public static byte[] concat(byte ... bytes){
         /* TODO: Verifier que ca revient au même */
+        assert bytes != null : "The input is null";
         /* this function returns an array of all the arguments (more specifically an array of ellipses style arguments)
         /*byte[] temp = new byte[bytes.length];
         for (int i = 0; i < bytes.length; ++i) {
@@ -149,6 +148,7 @@ public final class ArrayUtils {
      */
     public static byte[] concat(byte[] ... tabs){
         /* This function concatenates each line of the matrix tabs */
+        assert tabs != null : "The input is null"; // TODO: verifier si on peut faire un assert sur un tableau
         int length = 0;
         for (byte[] line: tabs) {
             length += line.length;
@@ -156,6 +156,7 @@ public final class ArrayUtils {
         byte[] temp = new byte[length];
         int i = 0;
         for (byte[] line: tabs) {
+            assert line != null : "One of the inner arrays of input is null";
             for (byte element: line) {
                 temp[i++] = element;
             }
@@ -177,7 +178,9 @@ public final class ArrayUtils {
      * start + length should also be smaller than the input's length
      */
     public static byte[] extract(byte[] input, int start, int length){
-        /* cette fonction arrange toutes les colonnes derrière la première ligne */
+        /* This function slices the array given a start index and a length. endindex = startIndex + Length */
+        assert input != null && start >= 0 && length >= 0 && start + length <= input.length : "The input is null or start and length are invalid";
+
         byte[] temp = new byte[length];
         int index = 0;
         for (int i = start; i < length + start; ++i) {
@@ -207,6 +210,14 @@ public final class ArrayUtils {
         *    int[] sizes = {2, 3, 3};
         * byte[][] output = {{0b00000000, 0b00000001}, {0b00000010, 0b00000011, 0b00000100}, {0b00000101, 0b00000110, 0b00000111}};
         */
+        { // Input checks
+            int sum = 0;
+            for (int size : sizes) {
+                sum += size;
+            }
+            assert input != null && sum == input.length : "One of the parameters is null or the sum of the elements in sizes is different from the input's length";
+        }
+
         byte[][] temp = new byte[sizes.length][];
         int start = 0;
         for (int i = 0; i < sizes.length; ++i) {
@@ -234,12 +245,17 @@ public final class ArrayUtils {
     public static byte[][] imageToChannels(int[][] input){
         /* TODO:
         *   Bug solved, but not sure if it's the right way to do it. On top of that, check if it works all the time by editing the test.
+        */
+        /* This function takes a matrix of int and returns a matrix of byte
+        * Throw assertion error if the input is null or one of the inner arrays of input is null
         *  input[a][b] input is a 2-dim array of integers containing the A R G B values of each pixel(a, b) as a 32-bit integer. Each of the value corresponds to 8 caracters in binary
         *  output[n] contains the n-th pixel of the image. Each pixel is represented by a 4-dim array of bytes containing the RGBA values of the pixel as 8-bit integers.
         */
+        assert input != null; // Checks if the input itself is null
         byte[][] intermediate = new byte[input.length * input[0].length][4];
         int index = 0;
         for (int[] ints : input) {
+            assert ints != null; // Checks if one the inner arrays is null
             for (int anInt : ints) {
                 intermediate[index++] = concat(partition(fromInt(anInt), 1, 1, 1, 1));
             }
