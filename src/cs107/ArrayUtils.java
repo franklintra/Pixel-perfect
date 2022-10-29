@@ -252,16 +252,15 @@ public final class ArrayUtils {
         *  output[n] contains the n-th pixel of the image. Each pixel is represented by a 4-dim array of bytes containing the RGBA values of the pixel as 8-bit integers.
         */
         assert input != null; // Checks if the input itself is null
-        byte[][] intermediate = new byte[input.length * input[0].length][4];
+        byte[][] temp = new byte[input.length * input[0].length][4];
         int index = 0;
         for (int[] ints : input) {
             assert ints != null; // Checks if one the inner arrays is null
             for (int anInt : ints) {
-                intermediate[index++] = concat(partition(fromInt(anInt), 1, 1, 1, 1));
+                temp[index++] = concat(partition(fromInt(anInt), 1, 1, 1, 1));
             }
         }
-        byte[][] temp = ARGBtoRGBA(intermediate); // Indices correction from ARGB space to RGBA space
-        return temp;
+        return ARGBtoRGBA(temp); // Indices correction from ARGB space to RGBA space;
     }
 
     /**
@@ -278,7 +277,21 @@ public final class ArrayUtils {
      * or width is invalid
      */
     public static int[][] channelsToImage(byte[][] input, int height, int width){
-        return null;
+        /* Todo: ce code il est cassé cheh faut le réparer mtn */
+        /*
+        * This function takes a linear representation of the image and returns a 2-dim array of int
+         */
+        assert input != null && input.length == width * height && height > 0 && width > 0 : "One of the parameters is null or input's length differs from width * height or height is invalid or width is invalid";
+        input = RGBAtoARGB(input); // Indices correction from RGBA space to ARGB space;
+        int[][] temp = new int[height][width];
+        int index = 0;
+        for (int[] line: temp) {
+            assert line != null;
+            for (int pixel: line) {
+                pixel = toInt(concat(partition(input[index++], 1, 1, 1, 1)));
+            }
+        }
+        return temp;
     }
 
     /*
@@ -297,6 +310,25 @@ public final class ArrayUtils {
             temp[i][g] = input[i][2];
             temp[i][b] = input[i][3];
             temp[i][a] = input[i][0];
+        }
+        return temp;
+    }
+    /*
+     * This functions takes a matrix of pixels in RGBA format and returns a pixel matrix in RGBA format
+     * @param input (byte[][]) - pixel matrix in ARGB format
+     * @return (byte[][]) - pixel matrix in RGBA format
+     * @throws AssertionError if the input is null
+     * or the pixels are incomplete (not 4 channels)
+     */
+    public static byte[][] RGBAtoARGB(byte[][] input) {
+        assert input != null : "The input is null";
+        assert input[0].length == 4 : "The pixels are incomplete (not 4 channels)";
+        byte[][] temp = new byte[input.length][4];
+        for (int i = 0; i < input.length; ++i) {
+            temp[i][r] = input[i][3];
+            temp[i][g] = input[i][0];
+            temp[i][b] = input[i][1];
+            temp[i][a] = input[i][2];
         }
         return temp;
     }

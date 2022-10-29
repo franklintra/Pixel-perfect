@@ -222,6 +222,10 @@ public final class Main {
     @SuppressWarnings("unused")
     private static boolean testChannelsToImage(){
         int[][]  output = ArrayUtils.channelsToImage(formattedInput, 3, 5);
+        /* For future debugging purposes
+        System.out.println(Arrays.deepToString(output));
+        System.out.println(Arrays.deepToString(input));
+        */
         return Arrays.deepEquals(output, input);
     }
 
