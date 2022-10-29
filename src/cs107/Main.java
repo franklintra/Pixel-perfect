@@ -41,15 +41,15 @@ public final class Main {
 
         // ========== Test ArrayUtils ==========
         // TODO: implement testEquals() (always returns true);
-        //assert testEquals();
-        //assert testWrap();
+        assert testEquals();
+        assert testWrap();
         assert testToInt();
         assert testFromInt();
         assert testConcatArrayBytes();
         assert testConcatBytes();
         assert testExtract();
         assert testPartition();
-        //assert testImageToChannels();
+        assert testImageToChannels();
         //assert testChannelsToImage();
 
         // ========== Test QOIEncoder ==========
@@ -212,6 +212,10 @@ public final class Main {
     @SuppressWarnings("unused")
     private static boolean testImageToChannels(){
         byte[][] output = ArrayUtils.imageToChannels(input);
+        /* For future debugging purposes
+        System.out.println(Arrays.deepToString(output));
+        System.out.println(Arrays.deepToString(formattedInput));
+         */
         return Arrays.deepEquals(output, formattedInput);
     }
 

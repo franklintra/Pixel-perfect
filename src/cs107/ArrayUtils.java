@@ -2,6 +2,8 @@ package cs107;
 
 import java.util.Arrays;
 
+import static cs107.QOISpecification.*;
+
 /**
  * Utility class to manipulate arrays.
  * @apiNote First Task of the 2022 Mini Project
@@ -200,6 +202,10 @@ public final class ArrayUtils {
         * Let temp be the matrix with number of lines = number of cuts of input
         * For each line of the matrix, let's cut the input array to the right indices
         * Indices are calculated recursively
+        * input = fromInt(128)
+        *    byte[] input = {0b00000000, 0b00000001, 0b00000010, 0b00000011, 0b00000100, 0b00000101, 0b00000110, 0b00000111};
+        *    int[] sizes = {2, 3, 3};
+        * byte[][] output = {{0b00000000, 0b00000001}, {0b00000010, 0b00000011, 0b00000100}, {0b00000101, 0b00000110, 0b00000111}};
         */
         byte[][] temp = new byte[sizes.length][];
         int start = 0;
@@ -226,14 +232,30 @@ public final class ArrayUtils {
      * or one of the inner arrays of input is null
      */
     public static byte[][] imageToChannels(int[][] input){
-        /* TODO: En cours */
-        int npixel = input.length * input[0].length;
-        byte[][] temp = new byte[input.length][];
+        /* TODO:
+        *   Bug solved, but not sure if it's the right way to do it. On top of that, check if it works all the time by editing the test.
+        *  input[a][b] input is a 2-dim array of integers containing the A R G B values of each pixel(a, b) as a 32-bit integer. Each of the value corresponds to 8 caracters in binary
+        *  output[n] contains the n-th pixel of the image. Each pixel is represented by a 4-dim array of bytes containing the RGBA values of the pixel as 8-bit integers.
+        */
+        byte[][] intermediate = new byte[input.length * input[0].length][4];
+        int index = 0;
+        for (int[] ints : input) {
+            for (int anInt : ints) {
+                intermediate[index++] = concat(partition(fromInt(anInt), 1, 1, 1, 1));
+            }
+        }
+        byte[][] temp = new byte[input.length * input[0].length][4];
+        // Indices correction from ARGB space to RGBA space
+        for (int i=0; i<intermediate.length; ++i) {
+            temp[i][r] = intermediate[i][1];
+            temp[i][g] = intermediate[i][2];
+            temp[i][b] = intermediate[i][3];
+            temp[i][a] = intermediate[i][0];
+        }
         return temp;
     }
 
     /**
-     * Format a 2-dim byte array where the first dimension is the pixel
      * and the second is the channel to a 2-dim int array where the first
      * dimension is the height and the second is the width
      * @param input (byte[][]) : linear representation of the image
