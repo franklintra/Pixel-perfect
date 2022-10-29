@@ -128,10 +128,7 @@ public final class Main {
         byte[][] a = new byte[][]{{0b01, 0b10}, {0b11, 0b00}};
         byte[][] b = new byte[][]{{0b10, 0b10}, {0b11, 0b00}};
         byte[][] c = null;
-        boolean test = false;
-        if (Arrays.deepEquals(a, b) == ArrayUtils.equals(a, b)) {
-            test = true;
-        }
+        boolean test = Arrays.deepEquals(a, b) == ArrayUtils.equals(a, b);
         if (Arrays.equals(a[0], b[0]) == ArrayUtils.equals(a[0], b[0])) {
             test = true;
         }
@@ -222,6 +219,10 @@ public final class Main {
     @SuppressWarnings("unused")
     private static boolean testChannelsToImage(){
         int[][]  output = ArrayUtils.channelsToImage(formattedInput, 3, 5);
+        /* For future debugging purposes
+        System.out.println(Arrays.deepToString(output));
+        System.out.println(Arrays.deepToString(input));
+        */
         return Arrays.deepEquals(output, input);
     }
 
