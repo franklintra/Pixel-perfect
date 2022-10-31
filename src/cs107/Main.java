@@ -50,7 +50,7 @@ public final class Main {
         assert testExtract();
         assert testPartition();
         assert testImageToChannels();
-        //assert testChannelsToImage();
+        assert testChannelsToImage();
 
         // ========== Test QOIEncoder ==========
         //assert testQoiHeader();
@@ -209,20 +209,18 @@ public final class Main {
     @SuppressWarnings("unused")
     private static boolean testImageToChannels(){
         byte[][] output = ArrayUtils.imageToChannels(input);
-        /* For future debugging purposes
-        System.out.println(Arrays.deepToString(output));
-        System.out.println(Arrays.deepToString(formattedInput));
-         */
+        //For future debugging purposes
+        /*System.out.println(Arrays.deepToString(output));
+        System.out.println(Arrays.deepToString(formattedInput));*/
         return Arrays.deepEquals(output, formattedInput);
     }
 
     @SuppressWarnings("unused")
     private static boolean testChannelsToImage(){
         int[][]  output = ArrayUtils.channelsToImage(formattedInput, 3, 5);
-        /* For future debugging purposes
+        //For future debugging purposes
         System.out.println(Arrays.deepToString(output));
         System.out.println(Arrays.deepToString(input));
-        */
         return Arrays.deepEquals(output, input);
     }
 

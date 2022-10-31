@@ -1,5 +1,7 @@
 package cs107;
 
+//import java.util.Arrays;
+
 import static cs107.QOISpecification.*;
 
 /**
@@ -285,10 +287,11 @@ public final class ArrayUtils {
         input = RGBAtoARGB(input); // Indices correction from RGBA space to ARGB space;
         int[][] temp = new int[height][width];
         int index = 0;
-        for (int[] line: temp) {
-            assert line != null;
-            for (int pixel: line) {
-                pixel = toInt(concat(partition(input[index++], 1, 1, 1, 1)));
+        for (int i=0; i<temp.length; i++) {
+            assert input[i] != null;
+            for (int j = 0; j<temp[i].length; j++) {
+                temp[i][j] = toInt(input[index]);
+                index += 1;
             }
         }
         return temp;
