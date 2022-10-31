@@ -290,8 +290,7 @@ public final class ArrayUtils {
         for (int i=0; i<temp.length; i++) {
             assert input[i] != null;
             for (int j = 0; j<temp[i].length; j++) {
-                temp[i][j] = toInt(input[index]);
-                index += 1;
+                temp[i][j] = toInt(input[index++]);
             }
         }
         return temp;

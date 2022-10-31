@@ -1,5 +1,7 @@
 package cs107;
 
+import java.util.Arrays;
+
 /**
  * "Quite Ok Image" Encoder
  * @apiNote Second task of the 2022 Mini Project
@@ -26,7 +28,13 @@ public final class QOIEncoder {
      * @return (byte[]) - Corresponding "Quite Ok Image" Header
      */
     public static byte[] qoiHeader(Helper.Image image){
-        return Helper.fail("Not Implemented");
+        assert image.color_space() == QOISpecification.sRGB || image.color_space() == QOISpecification.ALL;
+        assert image.channels() == QOISpecification.RGB || image.channels() == QOISpecification.RGBA;
+        assert image != null;
+        var header = new byte[4];
+        header = ArrayUtils.concat(QOISpecification.QOI_MAGIC, ArrayUtils.fromInt(image.data()[0].length), ArrayUtils.fromInt(image.data().length), new byte[]{(byte) image.channels()}, new byte[]{(image.color_space())});
+
+        return header;
     }
 
     // ==================================================================================
@@ -40,7 +48,8 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the pixel using the QOI_OP_RGB schema
      */
     public static byte[] qoiOpRGB(byte[] pixel){
-        return Helper.fail("Not Implemented");
+        assert pixel.length == 4;
+        return ArrayUtils.concat(new byte[]{QOISpecification.QOI_OP_RGB_TAG}, ArrayUtils.extract(pixel, 0, 3));
     }
 
     /**
@@ -50,7 +59,8 @@ public final class QOIEncoder {
      * @return (byte[]) Encoding of the pixel using the QOI_OP_RGBA schema
      */
     public static byte[] qoiOpRGBA(byte[] pixel){
-        return Helper.fail("Not Implemented");
+        assert pixel.length == 4;
+        return ArrayUtils.concat(new byte[]{QOISpecification.QOI_OP_RGBA_TAG},pixel);
     }
 
     /**
@@ -60,7 +70,9 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the index using the QOI_OP_INDEX schema
      */
     public static byte[] qoiOpIndex(byte index){
-        return Helper.fail("Not Implemented");
+        /* TODO: Check min and max index value*/
+        assert index >= 0 && index <= 255;
+        return new byte[]{(byte) (QOISpecification.QOI_OP_INDEX_TAG | index)};
     }
 
     /**
@@ -71,7 +83,15 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the given difference
      */
     public static byte[] qoiOpDiff(byte[] diff){
-        return Helper.fail("Not Implemented");
+        /* Todo: check diff requirement
+            please make this work*/
+        assert diff.length == 3;
+        assert diff[0] >= -16 && diff[0] <= 15;
+        assert diff[1] >= -16 && diff[1] <= 15;
+        assert diff[2] >= -16 && diff[2] <= 15;
+        System.out.println(Integer.toBinaryString(QOISpecification.QOI_OP_DIFF_TAG));
+        System.out.println(Arrays.toString(diff));
+        return new byte[]{(byte) ((byte) ((QOISpecification.QOI_OP_DIFF_TAG) | diff[0]) <<4 | ((byte) (diff[1]) << 2) | ((byte) (diff[2])))};
     }
 
     /**

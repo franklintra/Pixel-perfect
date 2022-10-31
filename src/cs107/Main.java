@@ -53,10 +53,10 @@ public final class Main {
         assert testChannelsToImage();
 
         // ========== Test QOIEncoder ==========
-        //assert testQoiHeader();
-        //assert testQoiOpRGB();
-        //assert testQoiOpRGBA();
-        //assert testQoiOpIndex();
+        assert testQoiHeader();
+        assert testQoiOpRGB();
+        assert testQoiOpRGBA();
+        assert testQoiOpIndex();
         //assert testQoiOpDiff();
         //assert testQoiOpLuma();
         //assert testQoiOpRun();
@@ -219,8 +219,8 @@ public final class Main {
     private static boolean testChannelsToImage(){
         int[][]  output = ArrayUtils.channelsToImage(formattedInput, 3, 5);
         //For future debugging purposes
-        System.out.println(Arrays.deepToString(output));
-        System.out.println(Arrays.deepToString(input));
+        /*System.out.println(Arrays.deepToString(output));
+        System.out.println(Arrays.deepToString(input));*/
         return Arrays.deepEquals(output, input);
     }
 
@@ -233,6 +233,8 @@ public final class Main {
         Helper.Image image = Helper.generateImage(new int[32][64], QOISpecification.RGB, QOISpecification.sRGB);
         byte[] expected = {113, 111, 105, 102, 0, 0, 0, 64, 0, 0, 0, 32, 3, 0};
         byte[] header = QOIEncoder.qoiHeader(image);
+        /*Hexdump.hexdump(header);
+        Hexdump.hexdump(expected);*/
         return Arrays.equals(expected, header);
     }
 
@@ -241,6 +243,8 @@ public final class Main {
         byte[] pixel = {100, 0, 55, 0};
         byte[] expected = {-2, 100, 0, 55};
         byte[] encoding = QOIEncoder.qoiOpRGB(pixel);
+        /*Hexdump.hexdump(encoding);
+        Hexdump.hexdump(expected);*/
         return Arrays.equals(expected, encoding);
     }
 
@@ -257,6 +261,8 @@ public final class Main {
         byte index = 43;
         byte[] expected = {43};
         byte[] encoding = QOIEncoder.qoiOpIndex(index);
+        /*Hexdump.hexdump(encoding);
+        Hexdump.hexdump(expected);*/
         return Arrays.equals(expected, encoding);
     }
 
@@ -265,6 +271,8 @@ public final class Main {
         byte[] diff = {-2, -1, 0};
         byte[] expected = {70};
         byte[] encoding = QOIEncoder.qoiOpDiff(diff);
+        Hexdump.hexdump(encoding);
+        Hexdump.hexdump(expected);
         return Arrays.equals(expected, encoding);
     }
 
