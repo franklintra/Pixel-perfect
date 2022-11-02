@@ -57,9 +57,9 @@ public final class Main {
         assert testQoiOpRGB();
         assert testQoiOpRGBA();
         assert testQoiOpIndex();
-        //assert testQoiOpDiff();
-        //assert testQoiOpLuma();
-        //assert testQoiOpRun();
+        assert testQoiOpDiff();
+        assert testQoiOpLuma();
+        assert testQoiOpRun();
         //assert testEncodeData();
 
         // ========== Test QOIDecoder ==========
@@ -270,9 +270,10 @@ public final class Main {
     private static boolean testQoiOpDiff(){
         byte[] diff = {-2, -1, 0};
         byte[] expected = {70};
+        //System.out.println(Integer.toBinaryString(70));
         byte[] encoding = QOIEncoder.qoiOpDiff(diff);
-        Hexdump.hexdump(encoding);
-        Hexdump.hexdump(expected);
+        /*Hexdump.hexdump(encoding);
+        Hexdump.hexdump(expected);*/
         return Arrays.equals(expected, encoding);
     }
 
@@ -281,6 +282,8 @@ public final class Main {
         byte[] diff = {19, 27, 20};
         byte[] expected = {-69, 1};
         byte[] encoding = QOIEncoder.qoiOpLuma(diff);
+        /*Hexdump.hexdump(encoding);
+        Hexdump.hexdump(expected);*/
         return Arrays.equals(expected, encoding);
     }
 
@@ -289,6 +292,8 @@ public final class Main {
         byte count = 41;
         byte[] expected = {-24};
         byte[] encoding = QOIEncoder.qoiOpRun(count);
+        /*Hexdump.hexdump(encoding);
+        Hexdump.hexdump(expected);*/
         return Arrays.equals(expected, encoding);
     }
 

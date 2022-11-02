@@ -1,5 +1,7 @@
 package cs107;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -83,15 +85,22 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the given difference
      */
     public static byte[] qoiOpDiff(byte[] diff){
-        /* Todo: check diff requirement
-            please make this work*/
+        /*
+        * This function checks if dr, dg and db are within the required range
+        * Once this is done it aligns the diff tag with dr, dg and db on 2 bits each
+        * -2 = 00
+        * -1 = 01
+        * 0 = 10
+        * 1 = 11
+        * following this logic it's similar to x = byte(x+2)
+         */
         assert diff.length == 3;
-        assert diff[0] >= -16 && diff[0] <= 15;
-        assert diff[1] >= -16 && diff[1] <= 15;
-        assert diff[2] >= -16 && diff[2] <= 15;
-        System.out.println(Integer.toBinaryString(QOISpecification.QOI_OP_DIFF_TAG));
-        System.out.println(Arrays.toString(diff));
-        return new byte[]{(byte) ((byte) ((QOISpecification.QOI_OP_DIFF_TAG) | diff[0]) <<4 | ((byte) (diff[1]) << 2) | ((byte) (diff[2])))};
+        assert diff[0] >= -3 && diff[0] <= 2;
+        assert diff[1] >= -3 && diff[1] <= 2;
+        assert diff[2] >= -3 && diff[2] <= 2;
+        //System.out.println(Integer.toBinaryString(QOISpecification.QOI_OP_DIFF_TAG));
+        //System.out.println(Integer.toBinaryString((byte) (0b01000000 | ArrayUtils.dByte(diff[0])<<4  | ArrayUtils.dByte(diff[1]) << 2 | ArrayUtils.dByte(diff[2]))));
+        return new byte[]{(byte) (QOISpecification.QOI_OP_DIFF_TAG | (diff[0]+2)<<4  | (diff[1]+2) << 2 | (diff[2]+2))};
     }
 
     /**
@@ -103,7 +112,14 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the given difference
      */
     public static byte[] qoiOpLuma(byte[] diff){
-        return Helper.fail("Not Implemented");
+        assert diff.length==3;
+        assert diff[1] > -33 && diff[1] < 32;
+        assert diff[0]-diff[1] > -9 && diff[0]-diff[1] < 8;
+        assert diff[2]-diff[1] > -9 && diff[2]-diff[1] < 8;
+        return new byte[]{
+                (byte) (QOISpecification.QOI_OP_LUMA_TAG | (diff[1]+32)),
+                (byte) ((diff[0]-diff[1]+8 >> 4) | diff[2]-diff[1]+8)
+        };
     }
 
     /**
@@ -113,7 +129,10 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of count
      */
     public static byte[] qoiOpRun(byte count){
-        return Helper.fail("Not Implemented");
+        assert (0 < count && count < 63);
+        return new byte[]{
+                (byte) (QOISpecification.QOI_OP_RUN_TAG | count-1)
+        };
     }
 
     // ==================================================================================
@@ -127,7 +146,15 @@ public final class QOIEncoder {
      * @return (byte[]) - "Quite Ok Image" representation of the image
      */
     public static byte[] encodeData(byte[][] image){
-        return Helper.fail("Not Implemented");
+        // Let's start by making the image a ring
+        byte[] linearised = ArrayUtils.concat(image);
+        ArrayList<Byte> data;
+        int i = 0;
+        do {
+            //data.add(QOIEncoder.qoiOpRGBA(ArrayUtils.fromInt(linearised[i])));
+            i++;
+        } while (i<linearised.length);
+        return new byte[]{};
     }
 
     /**
