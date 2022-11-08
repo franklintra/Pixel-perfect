@@ -1,6 +1,5 @@
 package cs107;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -34,7 +33,7 @@ public final class QOIEncoder {
         assert image.channels() == QOISpecification.RGB || image.channels() == QOISpecification.RGBA;
         assert image != null;
         var header = new byte[4];
-        header = ArrayUtils.concat(QOISpecification.QOI_MAGIC, ArrayUtils.fromInt(image.data()[0].length), ArrayUtils.fromInt(image.data().length), new byte[]{(byte) image.channels()}, new byte[]{(image.color_space())});
+        header = ArrayUtils.concat(QOISpecification.QOI_MAGIC, ArrayUtils.fromInt(image.data()[0].length), ArrayUtils.fromInt(image.data().length), new byte[]{image.channels()}, new byte[]{(image.color_space())});
 
         return header;
     }
@@ -118,7 +117,7 @@ public final class QOIEncoder {
         assert diff[2]-diff[1] > -9 && diff[2]-diff[1] < 8;
         return new byte[]{
                 (byte) (QOISpecification.QOI_OP_LUMA_TAG | (diff[1]+32)),
-                (byte) ((diff[0]-diff[1]+8 >> 4) | diff[2]-diff[1]+8)
+                (byte) ((diff[0]-diff[1]+8 << 4) | diff[2]-diff[1]+8)
         };
     }
 
@@ -146,15 +145,88 @@ public final class QOIEncoder {
      * @return (byte[]) - "Quite Ok Image" representation of the image
      */
     public static byte[] encodeData(byte[][] image){
-        // Let's start by making the image a ring
-        byte[] linearised = ArrayUtils.concat(image);
-        ArrayList<Byte> data;
-        int i = 0;
-        do {
-            //data.add(QOIEncoder.qoiOpRGBA(ArrayUtils.fromInt(linearised[i])));
-            i++;
-        } while (i<linearised.length);
-        return new byte[]{};
+        byte[][] hashing = new byte[64][4];
+        int count = 0;
+        byte[] previous;
+        byte[] current;
+        ArrayList<byte[]> data = new ArrayList<>();
+        //data.add(QOISpecification.START_PIXEL);
+        //data.add(0, QOIEncoder.qoiOpRGBA(pixels[0]));
+        for (int i = 0; i< image.length; i++) {
+            if (i==0) {
+                previous = QOISpecification.START_PIXEL;
+            }
+            else {previous = image[i-1];}
+            current = image[i];
+            //Pixel is the same as the 0<n<63 previous one
+            if (ArrayUtils.equals(previous, current)){
+                count++;
+                if (count == 62){
+                    data.add(QOIEncoder.qoiOpRun((byte) count));
+                    count = 0;
+                } else {
+                    continue;
+                }
+            } else {
+                if (count > 0){
+                    data.add(QOIEncoder.qoiOpRun((byte) count));
+                    System.out.println("Run of " + count + " pixels");
+                    count = 0;
+                }
+            }
+            //Hashing table
+            if (ArrayUtils.equals(hashing[QOISpecification.hash(current)], current)) {
+                data.add(QOIEncoder.qoiOpIndex(QOISpecification.hash(current)));
+                continue;
+            }
+            else {
+                hashing[QOISpecification.hash(current)] = current;
+            }
+            //Diff
+            if (current[3]==previous[3] && checkDelta(current, previous, -3, 2)) {
+                System.out.println("Diff"+Arrays.toString(QOIEncoder.qoiOpDiff(calculateDelta(ArrayUtils.extract(current, 0, 3), ArrayUtils.extract(previous, 0, 3)))));
+                data.add(QOIEncoder.qoiOpDiff(calculateDelta(ArrayUtils.extract(current, 0, 3), ArrayUtils.extract(previous, 0, 3))));
+                continue;
+            }
+            //Luma
+            if (current[3]==previous[3] && checkDelta(ArrayUtils.wrap(current[1]) , ArrayUtils.wrap(previous[1]), -33, 32) && checkDelta(new byte[]{(byte) (current[0]-previous[0]), (byte) (current[2]-previous[2])}, new byte[]{(byte) (current[1] - previous[1]), (byte) (current[1]-previous[1])}, -9, 8)) {
+                data.add(QOIEncoder.qoiOpLuma(calculateDelta(ArrayUtils.extract(current, 0, 3), ArrayUtils.extract(previous, 0, 3))));
+                System.out.println("Luma"+ Arrays.toString(data.get(data.size() - 1)));
+                continue;
+            }
+            //RGB
+            if (current[3] == previous[3]) {
+                System.out.println("RGB"+Arrays.toString(QOIEncoder.qoiOpRGB(current)));
+                data.add(QOIEncoder.qoiOpRGB(current));
+                continue;
+            }
+            //RGBA
+            System.out.println("RGBA"+Arrays.toString(QOIEncoder.qoiOpRGBA(current)));
+            data.add(QOIEncoder.qoiOpRGBA(current));
+        }
+        byte[][] encoded = new byte[data.size()][];
+        for (int i=0; i<data.size(); i++) {
+            encoded[i] = data.get(i);
+        }
+        //Hexdump.hexdump(ArrayUtils.concat(encoded));
+        return ArrayUtils.concat(encoded);
+    }
+
+    public static boolean checkDelta(byte[] a, byte[] b, int lower, int upper){
+        for (int i=0; i<a.length; i++){
+            if (a[i]-b[i] <= lower || a[i]-b[i] >= upper){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static byte[] calculateDelta(byte[] a, byte[] b){
+        byte[] delta = new byte[a.length];
+        for (int i=0; i<a.length; i++){
+            delta[i] = (byte) (a[i]-b[i]);
+        }
+        return delta;
     }
 
     /**
@@ -166,7 +238,11 @@ public final class QOIEncoder {
      * @throws AssertionError if the image is null
      */
     public static byte[] qoiFile(Helper.Image image){
-        return Helper.fail("Not Implemented");
+        assert image != null;
+        byte[] header = QOIEncoder.qoiHeader(image);
+        byte[] data = QOIEncoder.encodeData(ArrayUtils.imageToChannels(image.data()));
+        //Hexdump.hexdump(ArrayUtils.concat(header, data, QOISpecification.QOI_EOF));
+        Helper.write("image.qoi", ArrayUtils.concat(header, data, QOISpecification.QOI_EOF));
+        return ArrayUtils.concat(header, data, QOISpecification.QOI_EOF);
     }
-
 }

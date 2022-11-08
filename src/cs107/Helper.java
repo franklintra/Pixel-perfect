@@ -160,9 +160,7 @@ public final class Helper {
     public static void write(String path, byte[] content){
         var abs_path = res_folder + File.separator + path;
         try(var output = new FileOutputStream(abs_path)){
-            for (var b : content){
-                output.write(b);
-            }
+            output.write(content);
         }catch (IOException e){
             fail("An error occurred while trying to write to : \"%s\"%n", abs_path);
         }
