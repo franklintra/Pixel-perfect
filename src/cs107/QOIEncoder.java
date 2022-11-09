@@ -28,9 +28,9 @@ public final class QOIEncoder {
      * @return (byte[]) - Corresponding "Quite Ok Image" Header
      */
     public static byte[] qoiHeader(Helper.Image image){
+        assert image != null;
         assert image.color_space() == QOISpecification.sRGB || image.color_space() == QOISpecification.ALL;
         assert image.channels() == QOISpecification.RGB || image.channels() == QOISpecification.RGBA;
-        assert image != null;
         var header = new byte[4];
         header = ArrayUtils.concat(QOISpecification.QOI_MAGIC, ArrayUtils.fromInt(image.data()[0].length), ArrayUtils.fromInt(image.data().length), new byte[]{image.channels()}, new byte[]{(image.color_space())});
 
@@ -71,7 +71,7 @@ public final class QOIEncoder {
      */
     public static byte[] qoiOpIndex(byte index){
         /* TODO: Check min and max index value*/
-        assert index >= 0 && index <= 255;
+        assert index >= 0 && index <= 63;
         return new byte[]{(byte) (QOISpecification.QOI_OP_INDEX_TAG | index)};
     }
 
@@ -116,7 +116,7 @@ public final class QOIEncoder {
         assert diff[2]-diff[1] > -9 && diff[2]-diff[1] < 8;
         return new byte[]{
                 (byte) (QOISpecification.QOI_OP_LUMA_TAG | (diff[1]+32)),
-                (byte) ((diff[0]-diff[1]+8 << 4) | diff[2]-diff[1]+8)
+                (byte) (((diff[0]-diff[1]+8) << 4) | diff[2]-diff[1]+8)
         };
     }
 
@@ -163,6 +163,7 @@ public final class QOIEncoder {
                 count++;
                 if (count == 62 || i == image.length-1){
                     data.add(QOIEncoder.qoiOpRun((byte) count));
+                    //System.out.println("Run of " + count + " pixels");
                     count = 0;
                     continue;
                 } else {
@@ -178,28 +179,36 @@ public final class QOIEncoder {
             //Hashing table works
             if (ArrayUtils.equals(hashing[QOISpecification.hash(current)], current)) {
                 data.add(QOIEncoder.qoiOpIndex(QOISpecification.hash(current)));
+                //System.out.println("Index of " + QOISpecification.hash(current));
                 continue;
             }
             else {
                 hashing[QOISpecification.hash(current)] = current;
             }
-            //Diff works
-            if (current[3]==previous[3] && checkDelta(current, previous, -3, 2)) {
-                //System.out.println("Diff"+Arrays.toString(QOIEncoder.qoiOpDiff(calculateDelta(ArrayUtils.extract(current, 0, 3), ArrayUtils.extract(previous, 0, 3)))));
-                data.add(QOIEncoder.qoiOpDiff(calculateDelta(ArrayUtils.extract(current, 0, 3), ArrayUtils.extract(previous, 0, 3))));
-                continue;
-            }
-            //Luma works
-            if (current[3]==previous[3] && checkDelta(ArrayUtils.wrap(current[1]) , ArrayUtils.wrap(previous[1]), -33, 32) && checkDelta(new byte[]{(byte) (current[0]-previous[0]), (byte) (current[2]-previous[2])}, new byte[]{(byte) (current[1] - previous[1]), (byte) (current[1]-previous[1])}, -9, 8)) {
-                data.add(QOIEncoder.qoiOpLuma(calculateDelta(ArrayUtils.extract(current, 0, 3), ArrayUtils.extract(previous, 0, 3))));
-                //System.out.println("Luma"+ Arrays.toString(data.get(data.size() - 1)));
-                continue;
-            }
-            //RGB works
+            byte dr = (byte) (current[0] - previous[0]);
+            byte dg = (byte) (current[1] - previous[1]);
+            byte db = (byte) (current[2] - previous[2]);
             if (current[3] == previous[3]) {
-                //System.out.println("RGB"+Arrays.toString(QOIEncoder.qoiOpRGB(current)));
-                data.add(QOIEncoder.qoiOpRGB(current));
-                continue;
+                //Diff works
+                if ((dr >= -2 && dr <= 1) && (dg >= -2 && dg <= 1) && (db >= -2 && db <= 1)) {
+                    //System.out.println("Diff" + Arrays.toString(QOIEncoder.qoiOpDiff(calculateDelta(ArrayUtils.extract(current, 0, 3), ArrayUtils.extract(previous, 0, 3)))));
+                    data.add(QOIEncoder.qoiOpDiff(ArrayUtils.calculateDelta(ArrayUtils.extract(current, 0, 3), ArrayUtils.extract(previous, 0, 3))));
+                    continue;
+                }
+                //Luma works
+                else if ((dg < 32 && dg > -33)
+                        && ((byte) (dr - dg) < 8) && ((byte) (dr - dg) > -9)
+                        && ((byte) (db - dg) < 8) && ((byte) (db - dg) > -9)) {
+                    data.add(QOIEncoder.qoiOpLuma(ArrayUtils.calculateDelta(ArrayUtils.extract(current, 0, 3), ArrayUtils.extract(previous, 0, 3))));
+                    //System.out.println("Luma" + Arrays.toString(data.get(data.size() - 1)));
+                    continue;
+                }
+                //RGB works
+                else {
+                    //System.out.println("RGB" + Arrays.toString(QOIEncoder.qoiOpRGB(current)));
+                    data.add(QOIEncoder.qoiOpRGB(current));
+                    continue;
+                }
             }
             //RGBA works
             //System.out.println("RGBA"+Arrays.toString(QOIEncoder.qoiOpRGBA(current)));
@@ -211,23 +220,6 @@ public final class QOIEncoder {
         }
         //Hexdump.hexdump(ArrayUtils.concat(encoded));
         return ArrayUtils.concat(encoded);
-    }
-
-    public static boolean checkDelta(byte[] a, byte[] b, int lower, int upper){
-        for (int i=0; i<a.length; i++){
-            if (a[i]-b[i] <= lower || a[i]-b[i] >= upper){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static byte[] calculateDelta(byte[] a, byte[] b){
-        byte[] delta = new byte[a.length];
-        for (int i=0; i<a.length; i++){
-            delta[i] = (byte) (a[i]-b[i]);
-        }
-        return delta;
     }
 
     /**

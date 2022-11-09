@@ -334,4 +334,15 @@ public final class ArrayUtils {
         }
         return temp;
     }
+
+    /*
+    * This function calculates the difference per element between two bytes arrays
+     */
+    public static byte[] calculateDelta(byte[] a, byte[] b){
+        byte[] delta = new byte[a.length];
+        for (int i=0; i<a.length; i++){
+            delta[i] = (byte) (a[i]-b[i]);
+        }
+        return delta;
+    }
 }
