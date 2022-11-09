@@ -60,10 +60,12 @@ public final class Main {
         assert testQoiOpDiff();
         assert testQoiOpLuma();
         assert testQoiOpRun();
-        assert testEncodeData();
-
-        Hexdump.hexdump(QOIEncoder.qoiFile(Helper.readImage("references/qoi_op_run.png")));
-        //Diff.diff("references/qoi_op_run.qoi", "res/image.qoi");
+        //assert testEncodeData();
+        String[] pictures = new String[]{"random", "qoi_op_run", "qoi_op_rgba", "qoi_op_rgb", "qoi_op_luma", "qoi_op_index", "qoi_op_diff", "qoi_encode_test", "EPFL"};
+        for (String picture : pictures) {
+            QOIEncoder.qoiFile(Helper.readImage("references/"+picture+".png"));
+            Diff.diff("references/" + picture + ".qoi", "res/image.qoi");
+        }
         // ========== Test QOIDecoder ==========
         //assert testDecodeHeader();
         //assert testDecodeQoiOpRGB();
@@ -87,6 +89,7 @@ public final class Main {
      * @param inputFile (String) - The path of the file to encode
      * @param outputFile (String) - The path where to store the generated "Quite Ok Image"
      */
+    @SuppressWarnings("unused")
     public static void pngToQoi(String inputFile, String outputFile){
         // Read a PNG file
         var inputImage = Helper.readImage(inputFile);
@@ -101,6 +104,7 @@ public final class Main {
      * @param inputFile (String) - The path of the file to decode
      * @param outputFile (String) - The path where to store the generated "PNG" Image
      */
+    @SuppressWarnings("unused")
     public static void qoiToPng(String inputFile, String outputFile){
         // Read in binary mode the file 'input_file'
         var inputFileContent = Helper.read(inputFile);
@@ -116,6 +120,7 @@ public final class Main {
      * @param qoi (int) - Size of the "QOI" file
      * @return (int) - The ratio
      */
+    @SuppressWarnings("unused")
     public static double ratio(int png, int qoi){
         return 100d * png / qoi;
     }
@@ -136,6 +141,7 @@ public final class Main {
         }
         return test;
     }
+    @SuppressWarnings("unused")
     private static boolean testWrap(){
         byte a = 1;
         byte[] wrappedA = ArrayUtils.wrap(a);

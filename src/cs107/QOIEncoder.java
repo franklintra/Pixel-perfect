@@ -1,7 +1,6 @@
 package cs107;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * "Quite Ok Image" Encoder
@@ -159,22 +158,24 @@ public final class QOIEncoder {
             else {previous = image[i-1];}
             current = image[i];
             //Pixel is the same as the 0<n<63 previous one
+            //Todo: doesn't work
             if (ArrayUtils.equals(previous, current)){
                 count++;
-                if (count == 62){
+                if (count == 62 || i == image.length-1){
                     data.add(QOIEncoder.qoiOpRun((byte) count));
                     count = 0;
+                    continue;
                 } else {
                     continue;
                 }
             } else {
                 if (count > 0){
-                    data.add(QOIEncoder.qoiOpRun((byte) count));
-                    System.out.println("Run of " + count + " pixels");
+                    data.add(QOIEncoder.qoiOpRun((byte) (count)));
+                    //System.out.println("Run of " + count + " pixels");
                     count = 0;
                 }
             }
-            //Hashing table
+            //Hashing table works
             if (ArrayUtils.equals(hashing[QOISpecification.hash(current)], current)) {
                 data.add(QOIEncoder.qoiOpIndex(QOISpecification.hash(current)));
                 continue;
@@ -182,26 +183,26 @@ public final class QOIEncoder {
             else {
                 hashing[QOISpecification.hash(current)] = current;
             }
-            //Diff
+            //Diff works
             if (current[3]==previous[3] && checkDelta(current, previous, -3, 2)) {
-                System.out.println("Diff"+Arrays.toString(QOIEncoder.qoiOpDiff(calculateDelta(ArrayUtils.extract(current, 0, 3), ArrayUtils.extract(previous, 0, 3)))));
+                //System.out.println("Diff"+Arrays.toString(QOIEncoder.qoiOpDiff(calculateDelta(ArrayUtils.extract(current, 0, 3), ArrayUtils.extract(previous, 0, 3)))));
                 data.add(QOIEncoder.qoiOpDiff(calculateDelta(ArrayUtils.extract(current, 0, 3), ArrayUtils.extract(previous, 0, 3))));
                 continue;
             }
-            //Luma
+            //Luma works
             if (current[3]==previous[3] && checkDelta(ArrayUtils.wrap(current[1]) , ArrayUtils.wrap(previous[1]), -33, 32) && checkDelta(new byte[]{(byte) (current[0]-previous[0]), (byte) (current[2]-previous[2])}, new byte[]{(byte) (current[1] - previous[1]), (byte) (current[1]-previous[1])}, -9, 8)) {
                 data.add(QOIEncoder.qoiOpLuma(calculateDelta(ArrayUtils.extract(current, 0, 3), ArrayUtils.extract(previous, 0, 3))));
-                System.out.println("Luma"+ Arrays.toString(data.get(data.size() - 1)));
+                //System.out.println("Luma"+ Arrays.toString(data.get(data.size() - 1)));
                 continue;
             }
-            //RGB
+            //RGB works
             if (current[3] == previous[3]) {
-                System.out.println("RGB"+Arrays.toString(QOIEncoder.qoiOpRGB(current)));
+                //System.out.println("RGB"+Arrays.toString(QOIEncoder.qoiOpRGB(current)));
                 data.add(QOIEncoder.qoiOpRGB(current));
                 continue;
             }
-            //RGBA
-            System.out.println("RGBA"+Arrays.toString(QOIEncoder.qoiOpRGBA(current)));
+            //RGBA works
+            //System.out.println("RGBA"+Arrays.toString(QOIEncoder.qoiOpRGBA(current)));
             data.add(QOIEncoder.qoiOpRGBA(current));
         }
         byte[][] encoded = new byte[data.size()][];
@@ -243,6 +244,8 @@ public final class QOIEncoder {
         byte[] data = QOIEncoder.encodeData(ArrayUtils.imageToChannels(image.data()));
         //Hexdump.hexdump(ArrayUtils.concat(header, data, QOISpecification.QOI_EOF));
         Helper.write("image.qoi", ArrayUtils.concat(header, data, QOISpecification.QOI_EOF));
+        //Hexdump.hexdump(ArrayUtils.concat(header, data, QOISpecification.QOI_EOF));
+        //Hexdump.hexdump(data);
         return ArrayUtils.concat(header, data, QOISpecification.QOI_EOF);
     }
 }
