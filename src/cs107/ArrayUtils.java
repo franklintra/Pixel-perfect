@@ -279,7 +279,6 @@ public final class ArrayUtils {
      * or width is invalid
      */
     public static int[][] channelsToImage(byte[][] input, int height, int width){
-        /* Todo: ce code il est cassé cheh faut le réparer mtn */
         /*
         * This function takes a linear representation of the image and returns a 2-dim array of int
          */
@@ -344,5 +343,20 @@ public final class ArrayUtils {
             delta[i] = (byte) (a[i]-b[i]);
         }
         return delta;
+    }
+
+    /*
+    * This function checks that the content byte array ends with the bytes byte array
+     */
+    public static boolean endsWith(byte[] content, byte[] bytes) {
+        if (content.length < bytes.length) {
+            return false;
+        }
+        for (int i = 0; i < bytes.length; i++) {
+            if (content[content.length - bytes.length + i] != bytes[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 }

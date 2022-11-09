@@ -144,13 +144,16 @@ public final class QOIEncoder {
      * @return (byte[]) - "Quite Ok Image" representation of the image
      */
     public static byte[] encodeData(byte[][] image){
-        byte[][] hashing = new byte[64][4];
+        assert image != null;
+        for (byte[] row : image) {
+            assert row != null;
+            assert row.length == 4;
+        }
+        byte[][] hashtable = new byte[64][4];
         int count = 0;
         byte[] previous;
         byte[] current;
         ArrayList<byte[]> data = new ArrayList<>();
-        //data.add(QOISpecification.START_PIXEL);
-        //data.add(0, QOIEncoder.qoiOpRGBA(pixels[0]));
         for (int i = 0; i< image.length; i++) {
             if (i==0) {
                 previous = QOISpecification.START_PIXEL;
@@ -175,13 +178,13 @@ public final class QOIEncoder {
                 }
             }
             //Hashing table works
-            if (ArrayUtils.equals(hashing[QOISpecification.hash(current)], current)) {
+            if (ArrayUtils.equals(hashtable[QOISpecification.hash(current)], current)) {
                 data.add(QOIEncoder.qoiOpIndex(QOISpecification.hash(current)));
                 //System.out.println("Index of " + QOISpecification.hash(current));
                 continue;
             }
             else {
-                hashing[QOISpecification.hash(current)] = current;
+                hashtable[QOISpecification.hash(current)] = current;
             }
             byte dr = (byte) (current[0] - previous[0]);
             byte dg = (byte) (current[1] - previous[1]);

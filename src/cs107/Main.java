@@ -54,7 +54,7 @@ public final class Main {
         assert testChannelsToImage();
 
         // ========== Test QOIEncoder ==========
-        assert testQoiHeader();
+        /*assert testQoiHeader();
         assert testQoiOpRGB();
         assert testQoiOpRGBA();
         assert testQoiOpIndex();
@@ -62,8 +62,7 @@ public final class Main {
         assert testQoiOpLuma();
         assert testQoiOpRun();
         assert testEncodeData();
-        testEncodeImages(pictures);
-        //testEncodeImages(new String[]{"beach"});
+        testEncodeImages(pictures);*/
         // ========== Test QOIDecoder ==========
         assert testDecodeHeader();
         assert testDecodeQoiOpRGB();
@@ -71,7 +70,9 @@ public final class Main {
         assert testDecodeQoiOpDiff();
         assert testDecodeQoiOpLuma();
         assert testDecodeQoiOpRun();
-        //assert testDecodeData();
+        assert testDecodeData();
+        //testDecodeImages(new String[]{"qoi_op_rgb", "qoi_op_rgba"});
+        //testDecodeImages(pictures);
 
         System.out.println("All the tests passes. Congratulations");
     }
@@ -391,13 +392,21 @@ public final class Main {
     }
 
     private static void testEncodeImages(String[] pictures) {
+        //todo: implement boolean return value
+        boolean allTestsPassed = true;
         for (String picture : pictures) {
             QOIEncoder.qoiFile(Helper.readImage("references/"+picture+".png"));
             Diff.diff("references/" + picture + ".qoi", "res/image.qoi");
         }
     }
 
-    // Todo: implement testDecodeImages
+    private static void testDecodeImages(String[] pictures) {
+        boolean allTestsPassed = true;
+        for (String picture : pictures) {
+            QOIDecoder.decodeQoiFile(Helper.read("references/"+picture+".qoi"));
+            Diff.diff("references/" + picture + ".png", "res/image.png");
+        }
+    }
 
     // Todo implement encode_decode
     /* This function is the ultimate test that our encoder / decoder can go through.
