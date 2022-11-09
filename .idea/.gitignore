@@ -9,3 +9,5 @@
 /dataSources/
 /dataSources.local.xml
 *.class
+*.png
+*.qoi
