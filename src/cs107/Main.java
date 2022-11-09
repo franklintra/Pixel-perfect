@@ -23,6 +23,7 @@ public final class Main {
      * @param args (String[]) - Arguments passed to the program via the command line
      */
     public static void main(String[] args){
+        String[] pictures = new String[]{"random", "qoi_op_run", "qoi_op_rgba", "qoi_op_rgb", "qoi_op_luma", "qoi_op_index", "qoi_op_diff", "qoi_encode_test", "EPFL", "dice", "cube", "beach"};
         /*
         We've listed all the test methods here.
         Once you've implemented a new functionality, you can uncomment
@@ -60,26 +61,19 @@ public final class Main {
         assert testQoiOpDiff();
         assert testQoiOpLuma();
         assert testQoiOpRun();
-        //assert testEncodeData();
-        String[] pictures = new String[]{"random", "qoi_op_run", "qoi_op_rgba", "qoi_op_rgb", "qoi_op_luma", "qoi_op_index", "qoi_op_diff", "qoi_encode_test", "EPFL"};
-        for (String picture : pictures) {
-            QOIEncoder.qoiFile(Helper.readImage("references/"+picture+".png"));
-            Diff.diff("references/" + picture + ".qoi", "res/image.qoi");
-        }
+        assert testEncodeData();
+        testEncodeImages(pictures);
+        //testEncodeImages(new String[]{"beach"});
         // ========== Test QOIDecoder ==========
         assert testDecodeHeader();
         assert testDecodeQoiOpRGB();
         assert testDecodeQoiOpRGBA();
         assert testDecodeQoiOpDiff();
         assert testDecodeQoiOpLuma();
-        //assert testDecodeQoiOpRun();
+        assert testDecodeQoiOpRun();
         //assert testDecodeData();
 
         System.out.println("All the tests passes. Congratulations");
-        /* sout pour des bytes
-        byte[] b = new byte[]{0b01, 0b10};
-        Hexdump.hexdump(b);
-        */
     }
 
     // ============================================================================================
@@ -310,8 +304,8 @@ public final class Main {
         byte[][]  pixels = { {0,0,0,-1}, {0,0,0,-1}, {0,0,0,-1}, {0,-1,0,-1},{-18,-20,-18,-1},{0,0,0,-1}, {100,100,100,-1}, {90,90,90,90}};
         byte[] expected = {-62, 102, -115, -103, -76, 102, -2, 100, 100, 100, -1, 90, 90, 90, 90};
         byte[] encoding = QOIEncoder.encodeData(pixels);
-        //System.out.println(Arrays.toString(encoding));
-        //System.out.println(Arrays.toString(expected));
+        System.out.println(Arrays.toString(encoding));
+        System.out.println(Arrays.toString(expected));
         return Arrays.equals(expected, encoding);
     }
 
@@ -367,8 +361,8 @@ public final class Main {
         byte[] chunk          = {(byte) 0b10_10_01_01, (byte) 0b11_00_11_01};
         byte[] currentPixel = QOIDecoder.decodeQoiOpLuma(previousPixel, chunk);
         byte[] expected = {32, 122, 6, 7};
-        Hexdump.hexdump(currentPixel);
-        Hexdump.hexdump(expected);
+        //Hexdump.hexdump(currentPixel);
+        //Hexdump.hexdump(expected);
         return Arrays.equals(expected, currentPixel);
     }
 
@@ -376,10 +370,14 @@ public final class Main {
     private static boolean testDecodeQoiOpRun(){
         byte[][] buffer = new byte[6][4]; // Array is full of zeros
         byte[] pixel    = {1, 2, 3, 4};
-        byte chunk       = -61;
+        byte chunk      = -61;
         int position    = 1;
         int returnedValue = QOIDecoder.decodeQoiOpRun(buffer, pixel, chunk, position);
         byte[][] expectedBuffer = {{0, 0, 0, 0}, {1, 2, 3, 4}, {1, 2, 3, 4}, {1, 2, 3, 4}, {1, 2, 3, 4}, {0, 0, 0, 0}};
+        /*System.out.println(Integer.toBinaryString(chunk));
+        System.out.println(Arrays.deepToString(buffer));
+        System.out.println(Arrays.deepEquals(expectedBuffer, buffer));
+        System.out.println(returnedValue);*/
         return Arrays.deepEquals(expectedBuffer, buffer) && (returnedValue == 3);
     }
 
@@ -387,7 +385,29 @@ public final class Main {
     private static boolean testDecodeData(){
         byte[] encoding = {-62, 102, -115, -103, -76, 102, -2, 100, 100, 100, -1, 90, 90, 90, 90};
         byte[][] expected = { {0,0,0,-1}, {0,0,0,-1}, {0,0,0,-1}, {0,-1,0,-1},{-18,-20,-18,-1},{0,0,0,-1}, {100,100,100,-1}, {90,90,90,90}};
+        System.out.println(Arrays.deepToString(expected));
+        System.out.println(Arrays.deepToString(QOIDecoder.decodeData(encoding, 4, 2)));
         return Arrays.deepEquals(expected, QOIDecoder.decodeData(encoding, 4, 2));
     }
 
+    private static void testEncodeImages(String[] pictures) {
+        for (String picture : pictures) {
+            QOIEncoder.qoiFile(Helper.readImage("references/"+picture+".png"));
+            Diff.diff("references/" + picture + ".qoi", "res/image.qoi");
+        }
+    }
+
+    // Todo: implement testDecodeImages
+
+    // Todo implement encode_decode
+    /* This function is the ultimate test that our encoder / decoder can go through.
+    * It will read all png pictures in the path folder, encode them, decode them and compare the result with the original picture.
+    * If there is a difference, it will print the name of the file and the difference
+    * If there is no difference, it means our encoder / decoder is viable
+    * If the test passes for a very large number of real world pngs, it is very likely that our encoder/decoder is working really well
+     */
+    @SuppressWarnings("unused")
+    private static boolean encode_decode(String path) {
+        return Helper.fail("encode_decode is not implemented yet");
+    }
 }
