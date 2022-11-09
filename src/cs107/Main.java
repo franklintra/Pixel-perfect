@@ -67,11 +67,11 @@ public final class Main {
             Diff.diff("references/" + picture + ".qoi", "res/image.qoi");
         }
         // ========== Test QOIDecoder ==========
-        //assert testDecodeHeader();
-        //assert testDecodeQoiOpRGB();
-        //assert testDecodeQoiOpRGBA();
-        //assert testDecodeQoiOpDiff();
-        //assert testDecodeQoiOpLuma();
+        assert testDecodeHeader();
+        assert testDecodeQoiOpRGB();
+        assert testDecodeQoiOpRGBA();
+        assert testDecodeQoiOpDiff();
+        assert testDecodeQoiOpLuma();
         //assert testDecodeQoiOpRun();
         //assert testDecodeData();
 
@@ -356,6 +356,8 @@ public final class Main {
         byte chunk            = (byte) 0b01_11_11_11;
         var currentPixel = QOIDecoder.decodeQoiOpDiff(previous_pixel, chunk);
         byte[] expected = {24, 118, -3, 7};
+        //Hexdump.hexdump(currentPixel);
+        //Hexdump.hexdump(expected);
         return Arrays.equals(currentPixel, expected);
     }
 
@@ -365,6 +367,8 @@ public final class Main {
         byte[] chunk          = {(byte) 0b10_10_01_01, (byte) 0b11_00_11_01};
         byte[] currentPixel = QOIDecoder.decodeQoiOpLuma(previousPixel, chunk);
         byte[] expected = {32, 122, 6, 7};
+        Hexdump.hexdump(currentPixel);
+        Hexdump.hexdump(expected);
         return Arrays.equals(expected, currentPixel);
     }
 

@@ -27,7 +27,14 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.1
      */
     public static int[] decodeHeader(byte[] header){
-        return Helper.fail("Not Implemented");
+        /* This function extract the width, height, channels and color space from the header */
+        var decodeHeader = new byte[4];
+        decodeHeader = ArrayUtils.extract(header, 4, 10);
+        int width = ArrayUtils.toInt(ArrayUtils.extract(decodeHeader, 0, 4));
+        int height = ArrayUtils.toInt(ArrayUtils.extract(decodeHeader, 4, 4));
+        int channels = decodeHeader[8];
+        int color_space = decodeHeader[9];
+        return new int[]{width, height, channels, color_space};
     }
 
     // ==================================================================================
@@ -45,7 +52,14 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.1
      */
     public static int decodeQoiOpRGB(byte[][] buffer, byte[] input, byte alpha, int position, int idx){
-        return Helper.fail("Not Implemented");
+        /* This function decode the QOI_OP_RGB_TAG */
+        assert buffer != null && input != null;
+        assert position >= 0 && position < buffer.length;
+        assert idx >= 0 && idx < input.length;
+        assert alpha >= 0 && alpha <= 255;
+        assert input.length - idx >= 3;
+        buffer[position] = ArrayUtils.concat(ArrayUtils.extract(input, idx , 3), new byte[]{alpha});
+        return 3;
     }
 
     /**
@@ -58,7 +72,13 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.2
      */
     public static int decodeQoiOpRGBA(byte[][] buffer, byte[] input, int position, int idx){
-        return Helper.fail("Not Implemented");
+        /* This function decode the QOI_OP_RGBA_TAG */
+        assert buffer != null && input != null;
+        assert position >= 0 && position < buffer.length;
+        assert idx >= 0 && idx < input.length;
+        assert input.length - idx >= 4;
+        buffer[position] = ArrayUtils.concat(ArrayUtils.extract(input, idx , 4));
+        return 4;
     }
 
     /**
@@ -69,7 +89,20 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.4
      */
     public static byte[] decodeQoiOpDiff(byte[] previousPixel, byte chunk){
-        return Helper.fail("Not Implemented");
+        /* This function decode the QOI_OP_DIFF_TAG */
+        //TODO: comprendre le -3 du diff
+        assert previousPixel != null;
+        assert previousPixel.length == 4;
+        assert (byte) (chunk >> 6) == QOISpecification.QOI_OP_DIFF_TAG >> 6;
+        var newPixel = new byte[4];
+        newPixel[0] = (byte) (previousPixel[0]+1);
+        assert previousPixel != null;
+        //chunk = (byte)(chunk+2);
+        int[] diff = new int[]{(chunk >> 4) & 0b11 -2, (chunk >> 2) & 0b11 -2, (chunk) & 0b11 -3};
+        for (int i = 0; i < 3; i++) {
+            newPixel[i+1] = (byte) (previousPixel[i+1] + diff[i]);
+        }
+        return newPixel;
     }
 
     /**
@@ -80,7 +113,17 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.5
      */
     public static byte[] decodeQoiOpLuma(byte[] previousPixel, byte[] data){
-        return Helper.fail("Not Implemented");
+        //TODO: finir la fonction
+        assert previousPixel != null && data != null;
+        assert previousPixel.length == 4;
+        //assert (byte) data[0] == QOISpecification.QOI_OP_LUMA_TAG;
+        var newPixel = new byte[4];
+        newPixel[0] = (byte) (previousPixel[0]);
+        int[] diff = new int[]{ data[2] + data[1] ,data[1] , data[3] + data[1]};
+        for (int i = 0; i < 3; i++) {
+            newPixel[i+1] = (byte) (previousPixel[i+1] + diff[i]);
+        }
+        return newPixel;
     }
 
     /**
