@@ -211,18 +211,12 @@ public final class Main {
     @SuppressWarnings("unused")
     private static boolean testImageToChannels(){
         byte[][] output = ArrayUtils.imageToChannels(input);
-        //For future debugging purposes
-        /*System.out.println(Arrays.deepToString(output));
-        System.out.println(Arrays.deepToString(formattedInput));*/
         return Arrays.deepEquals(output, formattedInput);
     }
 
     @SuppressWarnings("unused")
     private static boolean testChannelsToImage(){
         int[][]  output = ArrayUtils.channelsToImage(formattedInput, 3, 5);
-        //For future debugging purposes
-        /*System.out.println(Arrays.deepToString(output));
-        System.out.println(Arrays.deepToString(input));*/
         return Arrays.deepEquals(output, input);
     }
 
@@ -235,8 +229,6 @@ public final class Main {
         Helper.Image image = Helper.generateImage(new int[32][64], QOISpecification.RGB, QOISpecification.sRGB);
         byte[] expected = {113, 111, 105, 102, 0, 0, 0, 64, 0, 0, 0, 32, 3, 0};
         byte[] header = QOIEncoder.qoiHeader(image);
-        /*Hexdump.hexdump(header);
-        Hexdump.hexdump(expected);*/
         return Arrays.equals(expected, header);
     }
 
@@ -245,8 +237,6 @@ public final class Main {
         byte[] pixel = {100, 0, 55, 0};
         byte[] expected = {-2, 100, 0, 55};
         byte[] encoding = QOIEncoder.qoiOpRGB(pixel);
-        /*Hexdump.hexdump(encoding);
-        Hexdump.hexdump(expected);*/
         return Arrays.equals(expected, encoding);
     }
 
@@ -263,8 +253,6 @@ public final class Main {
         byte index = 43;
         byte[] expected = {43};
         byte[] encoding = QOIEncoder.qoiOpIndex(index);
-        /*Hexdump.hexdump(encoding);
-        Hexdump.hexdump(expected);*/
         return Arrays.equals(expected, encoding);
     }
 
@@ -272,10 +260,7 @@ public final class Main {
     private static boolean testQoiOpDiff(){
         byte[] diff = {-2, -1, 0};
         byte[] expected = {70};
-        //System.out.println(Integer.toBinaryString(70));
         byte[] encoding = QOIEncoder.qoiOpDiff(diff);
-        /*Hexdump.hexdump(encoding);
-        Hexdump.hexdump(expected);*/
         return Arrays.equals(expected, encoding);
     }
 
@@ -284,8 +269,6 @@ public final class Main {
         byte[] diff = {19, 27, 20};
         byte[] expected = {-69, 1};
         byte[] encoding = QOIEncoder.qoiOpLuma(diff);
-        /*Hexdump.hexdump(encoding);
-        Hexdump.hexdump(expected);*/
         return Arrays.equals(expected, encoding);
     }
 
@@ -294,8 +277,6 @@ public final class Main {
         byte count = 41;
         byte[] expected = {-24};
         byte[] encoding = QOIEncoder.qoiOpRun(count);
-        /*Hexdump.hexdump(encoding);
-        Hexdump.hexdump(expected);*/
         return Arrays.equals(expected, encoding);
     }
 
@@ -304,8 +285,6 @@ public final class Main {
         byte[][]  pixels = { {0,0,0,-1}, {0,0,0,-1}, {0,0,0,-1}, {0,-1,0,-1},{-18,-20,-18,-1},{0,0,0,-1}, {100,100,100,-1}, {90,90,90,90}};
         byte[] expected = {-62, 102, -115, -103, -76, 102, -2, 100, 100, 100, -1, 90, 90, 90, 90};
         byte[] encoding = QOIEncoder.encodeData(pixels);
-        System.out.println(Arrays.toString(encoding));
-        System.out.println(Arrays.toString(expected));
         return Arrays.equals(expected, encoding);
     }
 
@@ -350,8 +329,6 @@ public final class Main {
         byte chunk            = (byte) 0b01_11_11_11;
         var currentPixel = QOIDecoder.decodeQoiOpDiff(previous_pixel, chunk);
         byte[] expected = {24, 118, -3, 7};
-        //Hexdump.hexdump(currentPixel);
-        //Hexdump.hexdump(expected);
         return Arrays.equals(currentPixel, expected);
     }
 
@@ -361,8 +338,6 @@ public final class Main {
         byte[] chunk          = {(byte) 0b10_10_01_01, (byte) 0b11_00_11_01};
         byte[] currentPixel = QOIDecoder.decodeQoiOpLuma(previousPixel, chunk);
         byte[] expected = {32, 122, 6, 7};
-        //Hexdump.hexdump(currentPixel);
-        //Hexdump.hexdump(expected);
         return Arrays.equals(expected, currentPixel);
     }
 
@@ -374,10 +349,6 @@ public final class Main {
         int position    = 1;
         int returnedValue = QOIDecoder.decodeQoiOpRun(buffer, pixel, chunk, position);
         byte[][] expectedBuffer = {{0, 0, 0, 0}, {1, 2, 3, 4}, {1, 2, 3, 4}, {1, 2, 3, 4}, {1, 2, 3, 4}, {0, 0, 0, 0}};
-        /*System.out.println(Integer.toBinaryString(chunk));
-        System.out.println(Arrays.deepToString(buffer));
-        System.out.println(Arrays.deepEquals(expectedBuffer, buffer));
-        System.out.println(returnedValue);*/
         return Arrays.deepEquals(expectedBuffer, buffer) && (returnedValue == 3);
     }
 
@@ -385,25 +356,23 @@ public final class Main {
     private static boolean testDecodeData(){
         byte[] encoding = {-62, 102, -115, -103, -76, 102, -2, 100, 100, 100, -1, 90, 90, 90, 90};
         byte[][] expected = { {0,0,0,-1}, {0,0,0,-1}, {0,0,0,-1}, {0,-1,0,-1},{-18,-20,-18,-1},{0,0,0,-1}, {100,100,100,-1}, {90,90,90,90}};
-        System.out.println(Arrays.deepToString(expected));
-        System.out.println(Arrays.deepToString(QOIDecoder.decodeData(encoding, 4, 2)));
         return Arrays.deepEquals(expected, QOIDecoder.decodeData(encoding, 4, 2));
     }
 
     private static void testEncodeImages(String[] pictures) {
         //todo: implement boolean return value
-        boolean allTestsPassed = true;
+        //boolean allTestsPassed = true;
         for (String picture : pictures) {
-            QOIEncoder.qoiFile(Helper.readImage("references/"+picture+".png"));
-            Diff.diff("references/" + picture + ".qoi", "res/image.qoi");
+            Helper.write(picture+".qoi", QOIEncoder.qoiFile(Helper.readImage("references/"+picture+".png")));
+            Diff.diff("references/" + picture + ".qoi", "res/"+picture+".qoi");
         }
     }
 
     private static void testDecodeImages(String[] pictures) {
-        boolean allTestsPassed = true;
+        //boolean allTestsPassed = true;
         for (String picture : pictures) {
-            QOIDecoder.decodeQoiFile(Helper.read("references/"+picture+".qoi"));
-            Diff.diff("references/" + picture + ".png", "res/image.png");
+            Helper.writeImage(picture+".png", QOIDecoder.decodeQoiFile(Helper.read("references/"+picture+".qoi")));
+            Diff.diff("references/" + picture + ".png", "res/"+picture+".png");
         }
     }
 
@@ -416,6 +385,6 @@ public final class Main {
      */
     @SuppressWarnings("unused")
     private static boolean encode_decode(String path) {
-        return Helper.fail("encode_decode is not implemented yet");
+        return Helper.fail("Not implemented yet");
     }
 }

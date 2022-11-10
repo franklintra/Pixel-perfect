@@ -30,7 +30,7 @@ public final class QOIDecoder {
      */
     public static int[] decodeHeader(byte[] header){
         assert header != null : "Header is null";
-        assert header.length == QOISpecification.HEADER_SIZE : "Header length is not 16";
+        assert header.length == QOISpecification.HEADER_SIZE : "Header length is not the expected one";
         assert Arrays.equals(ArrayUtils.extract(header, 0, 4), QOISpecification.QOI_MAGIC) : "Magic number is not correct";
 
         /* This function extract the width, height, channels and color space from the header */
@@ -143,7 +143,7 @@ public final class QOIDecoder {
         assert buffer != null && pixel != null;
         assert position >= 0 && position < buffer.length;
         assert pixel.length == 4;
-        assert buffer.length - position >= (chunk & 0b111111) + 1;
+        assert buffer.length - position > (chunk & 0b111111);
 
         chunk = (byte) (chunk & 0b111111);
         for (int i = 0; i <= chunk; i++) {
@@ -218,7 +218,6 @@ public final class QOIDecoder {
      * @throws AssertionError if content is null
      */
     public static Image decodeQoiFile(byte[] content){
-        //Todo: check this works properly
         assert content != null;
         assert ArrayUtils.endsWith(content, QOISpecification.QOI_EOF);
         byte[] temp = ArrayUtils.extract(content, 0, QOISpecification.HEADER_SIZE);
@@ -227,7 +226,7 @@ public final class QOIDecoder {
         int height = header[1];
         byte channels = (byte) header[2];
         byte colorSpace = (byte) header[3];
-        byte[][] pixels = decodeData(ArrayUtils.extract(content, temp.length, content.length - QOISpecification.QOI_EOF.length - temp.length), width, height);
+        byte[][] pixels = decodeData(ArrayUtils.extract(content, QOISpecification.HEADER_SIZE, content.length - QOISpecification.QOI_EOF.length - QOISpecification.HEADER_SIZE), width, height);
         int[][] image = ArrayUtils.channelsToImage(pixels, height, width);
         Image img = Helper.generateImage(image, channels, colorSpace);
         Helper.writeImage("image.png", img);
