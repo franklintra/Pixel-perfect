@@ -360,7 +360,6 @@ public final class Main {
     }
 
     private static void testEncodeImages(String[] pictures) {
-        //todo: implement boolean return value
         //boolean allTestsPassed = true;
         for (String picture : pictures) {
             Helper.write(picture+".qoi", QOIEncoder.qoiFile(Helper.readImage("references/"+picture+".png")));
