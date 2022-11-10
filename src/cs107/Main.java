@@ -54,7 +54,7 @@ public final class Main {
         assert testChannelsToImage();
 
         // ========== Test QOIEncoder ==========
-        /*assert testQoiHeader();
+        assert testQoiHeader();
         assert testQoiOpRGB();
         assert testQoiOpRGBA();
         assert testQoiOpIndex();
@@ -62,7 +62,7 @@ public final class Main {
         assert testQoiOpLuma();
         assert testQoiOpRun();
         assert testEncodeData();
-        testEncodeImages(pictures);*/
+        testEncodeImages(pictures);
         // ========== Test QOIDecoder ==========
         assert testDecodeHeader();
         assert testDecodeQoiOpRGB();
@@ -71,8 +71,7 @@ public final class Main {
         assert testDecodeQoiOpLuma();
         assert testDecodeQoiOpRun();
         assert testDecodeData();
-        //testDecodeImages(new String[]{"qoi_op_rgb", "qoi_op_rgba"});
-        //testDecodeImages(pictures);
+        testDecodeImages(pictures);
 
         System.out.println("All the tests passes. Congratulations");
     }
