@@ -1,5 +1,10 @@
 package cs107;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -62,7 +67,7 @@ public final class Main {
         assert testQoiOpLuma();
         assert testQoiOpRun();
         assert testEncodeData();
-        testEncodeImages(pictures);
+        assert testEncodeImage(pictures);
         // ========== Test QOIDecoder ==========
         assert testDecodeHeader();
         assert testDecodeQoiOpRGB();
@@ -71,7 +76,10 @@ public final class Main {
         assert testDecodeQoiOpLuma();
         assert testDecodeQoiOpRun();
         assert testDecodeData();
-        testDecodeImages(pictures);
+        assert testDecodeImage(pictures);
+
+        // ========== Test QOI ENCODER AND DECODER ==========
+        assert testEncodeDecodeTests();
 
         System.out.println("All the tests passes. Congratulations");
     }
@@ -193,6 +201,7 @@ public final class Main {
     }
 
     // Example of the format used for Helper.Image::data
+    @SuppressWarnings("unused")
     private static final int[][] input = {
             {1, 2, 3, 4, 5},
             {6, 7, 8, 9 ,10},
@@ -200,6 +209,7 @@ public final class Main {
     };
 
     // Example of the expected format in ArrayUtils::image_to_channels & ArrayUtils::channels_to_image
+    @SuppressWarnings("unused")
     private static final byte[][] formattedInput = {
             {0, 0,  1, 0}, {0, 0,  2, 0}, {0, 0,  3, 0}, {0, 0,  4, 0},{0, 0,  5, 0},
             {0, 0,  6, 0}, {0, 0,  7, 0}, {0, 0,  8, 0}, {0, 0,  9, 0},{0, 0, 10, 0},
@@ -359,31 +369,124 @@ public final class Main {
         return Arrays.deepEquals(expected, QOIDecoder.decodeData(encoding, 4, 2));
     }
 
-    private static void testEncodeImages(String[] pictures) {
-        //boolean allTestsPassed = true;
+
+    /**
+     * @param pictures The array of the name of the pictures to be encoded in QOI format (ref folder = references/)
+     * This method will encode the pictures in QOI format in the res/<picture>.qoi and compare the result with the reference file.
+     * @return true if the encoding is correct, false otherwise
+     */
+    @SuppressWarnings("unused")
+    private static boolean testEncodeImage(String[] pictures) {
+        boolean check = true;
         for (String picture : pictures) {
             Helper.write(picture+".qoi", QOIEncoder.qoiFile(Helper.readImage("references/"+picture+".png")));
-            Diff.diff("references/" + picture + ".qoi", "res/"+picture+".qoi");
+            //Diff.diff("references/" + picture + ".qoi", "res/"+picture+".qoi");
+            if (!ArrayUtils.equals(Helper.read("references/" + picture + ".qoi"), Helper.read("res/"+picture+".qoi"))) {
+                check = false;
+                System.out.println("The encoding of the picture " + picture + " is not correct.");
+            }
         }
+        return check;
     }
 
-    private static void testDecodeImages(String[] pictures) {
-        //boolean allTestsPassed = true;
+    /**
+     * @param pictures The array of the name of the pictures to be decoded in QOI format (ref folder = references/)
+     * This method will decode the pictures in PNG format in the res/<picture>.png and compare the result with the reference file.
+     * @return true if the decoding is correct, false otherwise
+     */
+    @SuppressWarnings("unused")
+    private static boolean testDecodeImage(String[] pictures) {
+        boolean check = true;
         for (String picture : pictures) {
             Helper.writeImage(picture+".png", QOIDecoder.decodeQoiFile(Helper.read("references/"+picture+".qoi")));
-            Diff.diff("references/" + picture + ".png", "res/"+picture+".png");
+            //Diff.diff("references/" + picture + ".png", "res/"+picture+".png");
+            if (!ArrayUtils.equals(Helper.read("references/" + picture + ".png"), Helper.read("res/"+picture+".png"))) {
+                check = false;
+                System.out.println("The decoding of the picture " + picture + " is not correct.");
+            }
         }
+        return check;
+    }
+
+    private static boolean testEncodeDecodeTests() {
+        String[] pictures = listTests();
+        boolean check = true;
+        for(String picture : pictures) {
+            check = check && testEncodeDecode(picture);
+            System.out.println("Test " + picture + " : " + (check ? "OK" : "KO"));
+        }
+        return check;
     }
 
     // Todo implement encode_decode
     /* This function is the ultimate test that our encoder / decoder can go through.
-    * It will read all png pictures in the path folder, encode them, decode them and compare the result with the original picture.
-    * If there is a difference, it will print the name of the file and the difference
-    * If there is no difference, it means our encoder / decoder is viable
-    * If the test passes for a very large number of real world pngs, it is very likely that our encoder/decoder is working really well
+    * It will encode a picture, decode it and compare the result with the original picture.
      */
     @SuppressWarnings("unused")
-    private static boolean encode_decode(String path) {
-        return Helper.fail("Not implemented yet");
+    private static boolean testEncodeDecode(String picture) {
+        //Encode to QOI
+        writeTests(picture+"_generated.qoi", QOIEncoder.qoiFile(Helper.readImage("tests/"+picture+".png")));
+        //Decode to PNG
+        writeImageTests(picture+"_generated"+".png", QOIDecoder.decodeQoiFile(Helper.read("tests/"+picture+"_generated.qoi")));
+        //Compare the original picture with the generated one
+        return ArrayUtils.equals(Helper.read("tests/"+picture+".png"), Helper.read("tests/"+picture+"_generated"+".png"));
+    }
+
+    /**
+     * Helper.write() for the tests folder
+     * @param path The path of the file to write in the tests folder
+     * @param content The binary content of the file to write
+     */
+    @SuppressWarnings("unused")
+    private static void writeTests(String path, byte[] content){
+        var abs_path = "tests" + File.separator + path;
+        try(var output = new FileOutputStream(abs_path)){
+            output.write(content);
+        }catch (IOException e){
+            Helper.fail("An error occurred while trying to write to : \"%s\"%n", abs_path);
+        }
+    }
+
+    /**
+     * Helper.writeImage() for the tests folder
+     * @param path The path of the file to write in the tests folder
+     * @param image The image to write
+     */
+    @SuppressWarnings("unused")
+    private static void writeImageTests(String path, Helper.Image image) {
+        int type = switch (image.channels()) {
+            case 3 -> BufferedImage.TYPE_3BYTE_BGR;
+            case 4 -> BufferedImage.TYPE_4BYTE_ABGR;
+            default -> Helper.fail("Cannot write this image, image.channels() == %d", image.channels());
+        };
+        var buffer = new BufferedImage(image.data()[0].length, image.data().length, type);
+        for(var x = 0; x < buffer.getHeight(); ++x){
+            for(var y = 0 ; y < buffer.getWidth(); ++y){
+                buffer.setRGB(y, x, image.data()[x][y]);
+            }
+        }
+        var abs_path = "tests" + File.separator + path;
+        try {
+            ImageIO.write(buffer, "png", new File(abs_path));
+        }catch (IOException e){
+            Helper.fail("An error occurred while trying to write to : \"%s\"%n", abs_path);
+        }
+    }
+    /**
+     * This function will list all the png files in the tests folder and return an array of their name without the extension.
+     * It is used to test the encoder and decoder on all the png images in the tests folder.
+     * @return an array of the name of the png files in the tests folder
+     */
+    private static String[] listTests(){
+        var dir = new File("tests");
+        var files = dir.listFiles((d, name) -> name.endsWith(".png"));
+        if(files == null){
+            Helper.fail("An error occurred while trying to list the files in the tests folder");
+        }
+        String[] tests = new String[files.length];
+        for(var i = 0; i < files.length; ++i){
+            tests[i] = files[i].getName().replace(".png", "");
+        }
+        return tests;
     }
 }
