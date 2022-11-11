@@ -2,6 +2,25 @@
 ### By Melaine and Franklin
 ### Mini Projet BA-1 Informatique
 
+## Warning to read!
+
+Les tests du projet situés dans main.java ne s'executeront pas si le dossier tests situé à la racine du projet n'est pas présent.
+Dans le dossier tests, il faut des images en png ainsi qu'un sous-dossier generated situé à la racine du dossier tests.
+Des images de tests ainsi que le dossier sont fournis par mail à l'adresse suivante: hamza.remmal@epfl.ch comme convenu avec lui
+Ainsi que sur le lien suivant: https://drive.google.com/file/d/1OKP50d4h4K7aquAAqOwNROpEN3cgtxGb/view?usp=share_link
+
+#### Ou placer les tests?
+```
+src/
+├─ cs107/
+tests/
+├─ generated/
+├─ image1.png
+├─ test2.png
+├─ ...
+
+```
+
 ### Fonctions rajoutées pour rendre le code plus lisible dans ArrayUtils:
 ###
 1. #### ARGBtoRGBA
