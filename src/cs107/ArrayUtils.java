@@ -323,7 +323,7 @@ public final class ArrayUtils {
         return delta;
     }
 
-    /*
+    /**
     * This function checks that the content byte array ends with the bytes byte array
     * @param content (byte[]) - the content
     * @param bytes (byte[]) - the bytes that should be at the end of the content
