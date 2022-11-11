@@ -11,3 +11,5 @@
 /dataSources/
 /dataSources.local.xml
 *.class
+/tests/generated/*
+!/tests/generated/.gitkeep
