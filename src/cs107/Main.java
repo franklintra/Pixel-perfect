@@ -67,7 +67,7 @@ public final class Main {
         assert testQoiOpLuma();
         assert testQoiOpRun();
         assert testEncodeData();
-        assert testEncodeImage(pictures);
+        assert testEncodeImage(pictures); //For (String picture: pictures) This will encode  references/picture.png to res/picture.qoi and compare the result with the reference (references/picture.qoi)
         // ========== Test QOIDecoder ==========
         assert testDecodeHeader();
         assert testDecodeQoiOpRGB();
@@ -76,10 +76,11 @@ public final class Main {
         assert testDecodeQoiOpLuma();
         assert testDecodeQoiOpRun();
         assert testDecodeData();
-        assert testDecodeImage(pictures);
+        assert testDecodeImage(pictures); // For (String picture : pictures) This will decode references/picture.qoi to res/picture.png and compare the result with the reference (references/picture.png)
 
         // ========== Test QOI ENCODER AND DECODER ==========
-        assert testEncodeDecodeTests();
+        assert testEncodeDecodeTests(); // This will encode tests/*.png to tests/generated/*.qoi and decode them to tests/generated/*.png and compare the result with the reference (tests/*.png)
+                                        // This comparison is done pixel by pixel instead of binary because two identical png files can have different binary representations.
 
         System.out.println("All the tests passes. Congratulations");
     }
@@ -411,9 +412,11 @@ public final class Main {
     private static boolean testEncodeDecodeTests() {
         String[] pictures = listTests();
         boolean check = true;
+        boolean test;
         for(String picture : pictures) {
-            check = check && testEncodeDecode(picture);
-            System.out.println("Test " + picture + " : " + (check ? "OK" : "KO"));
+            test = testEncodeDecode(picture);
+            System.out.println("Test " + picture + " : " + (test ? "OK" : "KO"));
+            check = check && test;
         }
         return check;
     }
@@ -425,11 +428,11 @@ public final class Main {
     @SuppressWarnings("unused")
     private static boolean testEncodeDecode(String picture) {
         //Encode to QOI
-        writeTests(picture+"_generated.qoi", QOIEncoder.qoiFile(Helper.readImage("tests/"+picture+".png")));
+        writeTests(picture+".qoi", QOIEncoder.qoiFile(Helper.readImage("tests/"+picture+".png")));
         //Decode to PNG
-        writeImageTests(picture+"_generated"+".png", QOIDecoder.decodeQoiFile(Helper.read("tests/"+picture+"_generated.qoi")));
+        writeImageTests(picture+".png", QOIDecoder.decodeQoiFile(Helper.read("tests/generated/"+picture+".qoi")));
         //Compare the original picture with the generated one
-        return ArrayUtils.equals(Helper.read("tests/"+picture+".png"), Helper.read("tests/"+picture+"_generated"+".png"));
+        return compareImages(Helper.readImage("tests/"+picture+".png"), Helper.readImage("tests/generated/"+picture+".png"));
     }
 
     /**
@@ -439,7 +442,7 @@ public final class Main {
      */
     @SuppressWarnings("unused")
     private static void writeTests(String path, byte[] content){
-        var abs_path = "tests" + File.separator + path;
+        var abs_path = "tests" + File.separator + "generated" + File.separator + path;
         try(var output = new FileOutputStream(abs_path)){
             output.write(content);
         }catch (IOException e){
@@ -465,7 +468,7 @@ public final class Main {
                 buffer.setRGB(y, x, image.data()[x][y]);
             }
         }
-        var abs_path = "tests" + File.separator + path;
+        var abs_path = "tests" + File.separator + "generated" + File.separator + path;
         try {
             ImageIO.write(buffer, "png", new File(abs_path));
         }catch (IOException e){
@@ -478,6 +481,9 @@ public final class Main {
      * @return an array of the name of the png files in the tests folder
      */
     private static String[] listTests(){
+        /*
+        * This method utilises the java.util.List interface as well as the java.util.Collections class in order to sort the list of files and make the testing more esthetically pleasing.
+         */
         var dir = new File("tests");
         var files = dir.listFiles((d, name) -> name.endsWith(".png"));
         if(files == null){
@@ -487,6 +493,33 @@ public final class Main {
         for(var i = 0; i < files.length; ++i){
             tests[i] = files[i].getName().replace(".png", "");
         }
-        return tests;
+        java.util.List<String> list = Arrays.asList(tests);
+        java.util.Collections.sort(list);
+        return java.util.List.copyOf(list).toArray(new String[0]);
+    }
+    /**
+     * This function will take two image objects and compare them pixel by pixel.
+     * @param image1 The first image to compare
+     * @param image2 The second image to compare
+     * @return true if the two images are the same, false otherwise
+     */
+    private static boolean compareImages(Helper.Image image1, Helper.Image image2) {
+        if (image1.channels() != image2.channels()) {
+            return false;
+        }
+        if (image1.data().length != image2.data().length) {
+            return false;
+        }
+        for (var i = 0; i < image1.data().length; ++i) {
+            if (image1.data()[i].length != image2.data()[i].length) {
+                return false;
+            }
+            for (var j = 0; j < image1.data()[i].length; ++j) {
+                if (image1.data()[i][j] != image2.data()[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

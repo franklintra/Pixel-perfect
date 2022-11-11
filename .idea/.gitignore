@@ -9,5 +9,5 @@
 /dataSources/
 /dataSources.local.xml
 *.class
-*.png
 /res/
+/tests/generated/
