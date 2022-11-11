@@ -52,11 +52,6 @@ public final class ArrayUtils {
      * @throws AssertionError if one of the parameters is null
      */
     public static boolean equals(byte[][] a1, byte[][] a2){
-        /*
-        * If one parameter is null, throw an AssertionError
-        * If both parameters have different length, return false
-        * TODO: reflechir à l'utilité du assert ci-dessous ainsi que des tests de longueur (redondance de code?)
-         */
         assert a1 != null && a2 != null : "There is one null parameter";
         if (a1.length != a2.length) return false;
         for (int i = 0; i < a1.length; i++) {
@@ -92,7 +87,7 @@ public final class ArrayUtils {
      * @throws AssertionError if the input is null or the input's length is different from 4
      */
     public static int toInt(byte[] bytes){
-        /* Converts [byte] to int */
+        /* Converts byte[] to int */
         assert bytes != null && bytes.length == 4 : "The input is null or its length is not 4";
         int result = 0;
         for (int i = 0; i < 4; i++) {
