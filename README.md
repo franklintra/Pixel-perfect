@@ -58,11 +58,12 @@
 ###
 2. #### writeTests
 * ##### Paramètres: String img_name, byte[] img
-* ##### Cette méthode permet d'écrire un fichier à partir de son contenu binaire dans le dossier tests/generated/img_name
+* ##### Utilisation: Cette méthode permet d'écrire un fichier à partir de son contenu binaire dans le dossier tests/generated/img_name.
 ###
 4. #### writeImageTests
 * ##### Paramètres: BufferedImage img, String name
-* ##### Cette méthode permet d'écrire un fichier en png à partir de son type image dans le dossier tests/generated/img_name
+* ##### Utilisation: Cette méthode permet d'écrire un fichier en png à partir de son type image dans le dossier tests/generated/img_name.
+
 ###
 5. #### compareImages
 * ##### Paramètres: BufferedImage img1, BufferedImage img2
