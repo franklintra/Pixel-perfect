@@ -72,7 +72,7 @@ public final class QOIDecoder {
         assert input.length - idx >= 3;
 
         //Store the pixel in the buffer
-        buffer[position] = ArrayUtils.concat(ArrayUtils.extract(input, idx, QOISpecification.RGB), new byte[]{alpha});
+        buffer[position] = ArrayUtils.concat(ArrayUtils.extract(input, idx, QOISpecification.RGB), ArrayUtils.wrap(alpha));
         //Return the number of consumed bytes which is a constant
         return QOISpecification.RGB;
     }

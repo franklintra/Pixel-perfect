@@ -63,9 +63,3 @@
 4. #### writeImageTests
 * ##### Paramètres: BufferedImage img, String name
 * ##### Utilisation: Cette méthode permet d'écrire un fichier en png à partir de son type image dans le dossier tests/generated/img_name.
-
-###
-5. #### compareImages
-* ##### Paramètres: BufferedImage img1, BufferedImage img2
-* ##### Cette méthode permet de comparer deux images pixel par pixel et renvoie true si elles sont identiques.
-* ##### Return: Un boolean

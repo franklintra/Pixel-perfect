@@ -432,7 +432,7 @@ public final class Main {
         //Decode to PNG
         writeImageTests(picture+".png", QOIDecoder.decodeQoiFile(Helper.read("tests/generated/"+picture+".qoi")));
         //Compare the original picture with the generated one
-        return compareImages(Helper.readImage("tests/"+picture+".png"), Helper.readImage("tests/generated/"+picture+".png"));
+        return ArrayUtils.equals(ArrayUtils.imageToChannels(Helper.readImage("tests/"+picture+".png").data()), ArrayUtils.imageToChannels(Helper.readImage("tests/generated/"+picture+".png").data()));
     }
 
     /**
@@ -496,30 +496,5 @@ public final class Main {
         java.util.List<String> list = Arrays.asList(tests);
         java.util.Collections.sort(list);
         return java.util.List.copyOf(list).toArray(new String[0]);
-    }
-    /**
-     * This function will take two image objects and compare them pixel by pixel.
-     * @param image1 The first image to compare
-     * @param image2 The second image to compare
-     * @return true if the two images are the same, false otherwise
-     */
-    private static boolean compareImages(Helper.Image image1, Helper.Image image2) {
-        if (image1.channels() != image2.channels()) {
-            return false;
-        }
-        if (image1.data().length != image2.data().length) {
-            return false;
-        }
-        for (var i = 0; i < image1.data().length; ++i) {
-            if (image1.data()[i].length != image2.data()[i].length) {
-                return false;
-            }
-            for (var j = 0; j < image1.data()[i].length; ++j) {
-                if (image1.data()[i][j] != image2.data()[i][j]) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }
