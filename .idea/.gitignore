@@ -11,5 +11,3 @@
 /dataSources/
 /dataSources.local.xml
 *.class
-
-/tests/generated/*
