@@ -1,6 +1,5 @@
 # QOI image format encoder and decoder
-### By Melaine and Franklin
-### Mini Projet BA-1 Informatique
+# Made during the EPFL computer science course
 
 ## Warning to read!
 
